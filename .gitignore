@@ -211,7 +211,6 @@ pythontex-files-*/
 
 # todonotes
 *.tdo
-
 # vhistory
 *.hst
 *.ver
@@ -274,3 +273,5 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+
+seminar.pdf
