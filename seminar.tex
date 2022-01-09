@@ -32,8 +32,54 @@
 \begin{frame}{Outline}
     \tableofcontents[hideallsubsections]
 \end{frame}
-\section{Intro}
-\section{Cat}
-\section{semantics}
-\section{appl}
+\section{Introduction and main concepts}
+\begin{frame}
+    \frametitle{What is a concurrent system?}
+    Modelling concurrent system is one of the most studied problems in Computer Science
+
+    \bigskip
+    \pause
+    Many proposed answers:\begin{itemize}
+        \item Petri Nets 
+        \item CCS
+        \item CSP 
+        \item Actors
+        \item $\cdots$
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    \frametitle{The need for unification}
+    \pause
+        \begin{block}{External fragmentation}
+            Hard to relate different approaches, each with their own concepts, models and issues
+        \end{block}
+    \pause 
+    \begin{block}{Internal fragmentation}
+        Sometimes, fragmentation appears also within a specific approach (e.g. how can we unify operational and denotational semantics of CCS?)
+    \end{block}
+    \pause
+    \begin{block}{Concurrency in other areas}
+        A related problem is the integration of concurrency with other paradigms ( OO, Functional, ...)
+        without using complex \emph{ad hoc} solutions.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    
+    Rewriting logic aim to resolve these issues with a two sides approach
+    \pause
+    \begin{block}{Computational side}
+        Computationally, rewriting logic is a \emph{semantic framework} where many different 
+        models and languages can be represented and executed as \textbf{rewrite theories}. 
+    \end{block}
+    \pause
+    \begin{block}{Logical side}
+        Rewriting logic  is also a \emph{logical framework}, a model within which 
+        many other logics and deduction procedures  can be modeled and reasoned about.        
+    \end{block}
+\end{frame}
+\section{Foundation}
+\section{Semantic model}
+\section{Maude}
+\section{Applications}
 \end{document}
