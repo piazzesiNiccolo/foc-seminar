@@ -2,7 +2,6 @@
 \usepackage{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[sfdefault]{FiraSans}
 \usepackage{graphicx}
 \usepackage{stmaryrd}
 \usepackage{xcolor}
@@ -10,16 +9,45 @@
 \usepackage{proof}
 \usepackage{listings}
 \usepackage{amsmath}
+
 \usetheme{Copenhagen}
+\usefonttheme{professionalfonts}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{headline}{}
+
+\definecolor{delimiterColor}{HTML}{B65E47}
+\definecolor{numberColor}{HTML}{FF0000}
+\definecolor{commentColor}{HTML}{008000}
+\definecolor{keyColor}{HTML}{002BFF}
+
+\lstdefinelanguage{maude}
+{
+	breaklines=true,
+	extendedchars=true,
+	tabsize=2,
+	frame=none,
+	columns=fullflexible,
+	showtabs=false,
+	showstringspaces=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle={\ttfamily},
+	keywordstyle={\color{keyColor}},
+	ndkeywordstyle={\color{keyColor}},
+	stringstyle={\color{delimiterColor}},
+	commentstyle={\color{commentColor}},
+	ndkeywords={Int, Bool, String},
+	keywords={in, load, pr, protecting, sort, sorts, op, ops, var, vars,eq, cq, ceq,endfm, fmod, is, mod, endm, load, =, ==, =/=, euler, discreteswitch, nonaccurate, mp, rk4, accurate, init, exp, abs, true, false, nil, ctor, PhysicalEntityStar, PhysicalInteraction, PhysicalEntity, PhysicalEntityPC1, FlowSource, SysMan, effortDyn, flowDyn, Object, Oid, assoc, id, DataCollector, Rat, NzNat, frac, trunc, if, else, class, load, homod, endhom, eof, var, vars, eq, op, ops, pr, inc, protecting, including, ceq, is, tomod, endtom, msg, rl, crl, trew, hfind, hsearch, tsearch, hmc, hrew, time, earliest, such, that, subclass, Prop, omod, sort, subsort, not, endom, fi, msgs, fmod, endfm, hfrew, then, mod, and, or, endm, endtm, in, out, set, trace, exclude, loop, show, using, stepsize, tick, Oid, Nat, Float, Configuration, String, NzNat},
+	morecomment={[l]{***}},
+	morecomment={[l]{---}},
+}
 \AtBeginSection[ ]
 {
 \begin{frame}{Outline}
     \tableofcontents[currentsection, hideallsubsections]
 \end{frame}
 }
-\title{Rewriting Logic \& Maude}
+\title{Conditional Rewriting Logic \& Maude}
 \author{Niccolò Piazzesi}
 \institute{
     Università degli studi di Pisa
@@ -78,7 +106,181 @@
         many other logics and deduction procedures  can be modeled and reasoned about.        
     \end{block}
 \end{frame}
-\section{Foundation}
+\section{Foundations}
+\begin{frame}
+    \frametitle{A logic of action}
+    The rules of 
+\end{frame}
+\begin{frame}[fragile]
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            \scriptsize
+\begin{lstlisting}[language=maude]
+fmod NAT is 
+    sort NAT .
+ op 0 : -> Nat .
+ op s_ : Nat -> Nat .
+ op _+_: Nat Nat -> Nat [comm].
+ vars N M : Nat .
+ eq N + 0 = N .
+ eq (s N) + (s M) = s s (N + M).
+endfm
+\end{lstlisting}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \scriptsize
+\begin{lstlisting}[language=maude]
+fmod REVERSE is 
+    protecting NAT .
+ subsorts Nat < Tree .
+ op _^_ : Tree Tree  -> Tree .
+ op rev : Tree -> Tree .
+ var N : Nat .
+ vars T T' : Tree .
+ eq rev(N) : N .
+ eq rev (T ^ T') = rev(T') ^ rev(T).
+endfm
+\end{lstlisting}
+        \end{column}
+    \end{columns}
+\end{frame}
+\begin{frame}
+    \frametitle{Rewrite Theory}
+    \begin{center}
+        \resizebox{3cm}{!}{$(\Sigma, E, L, R)$}
+    \end{center}
+    
+    \bigskip
+    \begin{itemize}
+        \pause
+        \item $\Sigma$: ranked alphabet of function symbols
+        \pause
+        \item E: set  of $\Sigma$-equations 
+        \pause
+        \item L: set of \emph{labels}
+        \pause
+        \item R: set of pairs $R \subseteq L \times (T_{\Sigma, E}(\mathbf{X})^2)^+$
+    \end{itemize}
+    
+    \pause
+    \bigskip
+    $T_{\Sigma,E}(\mathbf{X})$ denotes the $\Sigma-algebra$ of equivalence classes of $\Sigma-terms$ with variables in $\mathbf{X}$ modulo the equations E
+    
+    \medskip
+    Elements of R are called \emph{rewrite rules}
+\end{frame}
+\begin{frame}
+    \frametitle{Rewriting rules}
+    A rewrite rule 
+    \begin{center}
+        $(r,([t],[t'])([u_1],[v_1])\cdots([u_k],[v_k]))$
+    \end{center}
+    is written as 
+    $$
+    r:[t] \rightarrow [t']\ if\ \underbrace{[u_1]\rightarrow[v_1] \wedge \cdots \wedge [u_k] \rightarrow [v_k]\onslide<2->}_{condition\ C}
+    $$
+    
+    \bigskip
+    \pause
+    If a condition is empty, we have an \emph{unconditional rewrite rule} 
+    $$
+    r:[t] \rightarrow [t']
+    $$
+    
+
+    If all the rules are unconditional , we have an \emph{unconditional rewrite theory}
+\end{frame}
+\begin{frame}
+    NAT-CHOICE is a rewrite theory
+    
+    \pause
+    \begin{itemize}
+        \item $\Sigma = \{0,s\_,\_+\_,\_?\_\}$
+        \pause
+        \item $E = \{N + M = M + N\}$
+        \pause
+        \item R = 
+            \vspace{-5mm}
+            \begin{align*}
+                &r1: N+0 \rightarrow N \\ 
+                &r2: (s N) + (s M) \rightarrow s s (N + M) \\ 
+                &r3: N ? M \rightarrow N \\ 
+                &r4: N ? M \rightarrow M 
+            \end{align*}
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    \frametitle{Sequent entailment}
+    \begin{center}
+        \resizebox{3cm}{!}{$\mathcal{R} \vdash [t] \rightarrow [t']$}
+    \end{center}
+
+    \pause 
+    \vspace{2cm}
+    A rewrite theory $\mathcal{R}$ \emph{entails} a \emph{sequent}
+    $ [t] \rightarrow [t']$ \emph{iff} $[t] \rightarrow [t']$ can be obtained 
+    by finite application of \emph{rules of deduction}.
+\end{frame}
+\begin{frame}[allowframebreaks]
+    \frametitle{Rules of deduction}
+    \scriptsize
+    \begin{enumerate}
+        \item \emph{Relfexivity}. For each $[t] \in T_{\Sigma,E}(\mathbf{X})$, 
+            $$
+            \infer[]{[t] \rightarrow [t']}{}
+            $$
+        \item \emph{Congruence}. For each $f \in \Sigma_n, n \in \mathbb{N}$,
+            $$
+            \infer[]{[f(t_1,\cdots,t_n)] \rightarrow [f(t_1',\cdots,t_n')]}{[t_1] \rightarrow [t_1']\ \cdots\ [t_n] \rightarrow [t_n']}            $$ 
+        \item \emph{Replacement}. For each rule  
+        \begin{align*}
+            r&:[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\
+            &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_n(\overline{x})] \rightarrow [v_n(\overline{x})]
+        \end{align*}
+        in $R$,
+        $$
+        \infer[]{[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w'}/ \overline{x})] }
+        {} 
+        $$
+
+        \item \emph{Transitivity}
+        $$
+        \infer[]{[t_1] \rightarrow [t_3]}{[t_1] \rightarrow [t_2] \quad [t_2] \rightarrow [t_3]} 
+        $$
+        \item \emph{Unconditional replacement}. For each 
+        $$ r: [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
+        in R, 
+        $$
+        \infer[]{[t(\overline{w} / \overline{x} )] \rightarrow [t'(\overline{w'} / \overline{x})]}{[w_1] \rightarrow [w_1'] \quad \cdots \quad [w_n] \rightarrow [w_n']}
+        $$
+    \end{enumerate}
+\end{frame}
+\begin{frame}
+    \frametitle{Additional rules}
+    \scriptsize
+    \begin{enumerate}
+        \setcounter{enumi}{5}
+        \item \emph{Substitution}
+        $$
+        \infer[]
+        {[t(w_1)/x_{i_1},\cdots,w_n/x_{i_n}] \rightarrow [t'(w_1')/x_{i_1},\cdots,w_n'/x_{i_n}]}
+        {[t(x_{i_1},\cdots,x_{i_n})] \rightarrow [t'(x_{i_1},\cdots,x_{i_n})] [w_1] \rightarrow [w_1'] \cdots [w_n] \rightarrow [w_n']} 
+        $$
+    \end{enumerate}
+    
+    Any sequent derivable by adding (6) to  (1)-(4) can be derived by using only (1)-(4)
+
+    \pause 
+    \bigskip
+    \emph{Equational logic} can be obtained  from rewriting logic by adding the following rule 
+    \begin{enumerate}
+        \setcounter{enumi}{6}
+        \item \emph{Simmetry}
+        $$
+        \infer[]{[t_2] \rightarrow [t_1]}{[t_1] \rightarrow [t_2]} 
+        $$
+    \end{enumerate}
+\end{frame}
 \section{Semantic model}
 \section{Maude}
 \section{Applications}
