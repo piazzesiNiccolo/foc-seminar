@@ -38,7 +38,7 @@
 	stringstyle={\color{delimiterColor}},
 	commentstyle={\color{commentColor}},
 	ndkeywords={Int, Bool, String},
-	keywords={in, load, pr, protecting, sort, sorts, op, ops, var, vars,eq, cq, ceq,endfm, fmod, is, mod, endm, load, =, ==, =/=, euler, discreteswitch, nonaccurate, mp, rk4, accurate, init, exp, abs, true, false, nil, ctor, PhysicalEntityStar, PhysicalInteraction, PhysicalEntity, PhysicalEntityPC1, FlowSource, SysMan, effortDyn, flowDyn, Object, Oid, assoc, id, DataCollector, Rat, NzNat, frac, trunc, if, else, class, load, homod, endhom, eof, var, vars, eq, op, ops, pr, inc, protecting, including, ceq, is, tomod, endtom, msg, rl, crl, trew, hfind, hsearch, tsearch, hmc, hrew, time, earliest, such, that, subclass, Prop, omod, sort, subsort, not, endom, fi, msgs, fmod, endfm, hfrew, then, mod, and, or, endm, endtm, in, out, set, trace, exclude, loop, show, using, stepsize, tick, Oid, Nat, Float, Configuration, String, NzNat},
+	keywords={in, load, pr, protecting, sort, sorts, op, ops, var, vars,eq, cq, ceq,endfm, fmod, is, mod, endm, load, =, ==, =/=, euler, discreteswitch, nonaccurate, mp, rk4, accurate, init, exp, abs, true, false, nil, ctor, PhysicalEntityStar, PhysicalInteraction, PhysicalEntity, PhysicalEntityPC1, FlowSource, SysMan, effortDyn, flowDyn, Object, Oid, assoc, comm, id, DataCollector, Rat, NzNat, frac, trunc, if, else, class, load, homod, endhom, eof, var, vars, eq, op, ops, pr, inc, protecting, including, ceq, is, tomod, endtom, msg, rl, crl, trew, hfind, hsearch, tsearch, hmc, hrew, time, earliest, such, that, subclass, Prop, omod, sort, subsort, not, endom, fi, msgs, fmod, endfm, hfrew, then, mod, and, or, endm, endtm, in, out, set, trace, exclude, loop, show, using, stepsize, tick, Oid, Nat, Float, Configuration, String, NzNat},
 	morecomment={[l]{***}},
 	morecomment={[l]{---}},
 }
@@ -316,7 +316,173 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \end{figure}
     }
 \end{frame}
+\begin{frame}
+    \frametitle{Reflection}
+
+    Rewriting logic is \textbf{reflective}.
+
+    \pause 
+    \bigskip 
+    There is a finitely presented rewrite theory $\mathbf{U}$ such that, for 
+        any finitely presented rewrite theory $\mathbf{T}$ (including $\mathbf{U}$ itself) we have 
+        the following equivalence 
+        $$
+        T \vdash [t] \rightarrow [t'] \Longleftrightarrow U \vdash  \langle \overline{T},\overline{[t]} \rangle  \rightarrow \langle \overline{T},\overline{[t']} \rangle
+        $$ 
+
+    \pause 
+    This property is fundamental for the applications of RL, as we will see in Maude.
+\end{frame}
 \section{Semantic model}
 \section{Maude}
+\begin{frame}
+    \frametitle{What is Maude}
+    \textbf{Maude}
+    \begin{itemize}
+        \pause
+        \item Declarative programming languaged based on rewriting logic 
+        \begin{itemize}
+            \item Built by SRI international and University of Illinois
+            \item Includes membership equational logic as a sublanguage based on OBJ3 
+        \end{itemize}
+        \pause
+        \item Modelling of distributed systems 
+        \pause 
+        \item  Explicit state analysis 
+        \begin{itemize}
+            \item Simulation by rewriting 
+            \item reachability analysis 
+            \item LTL and LTLR model checking 
+        \end{itemize}
+        \pause 
+        \item Unification 
+        \item SMT solver
+    \end{itemize}
+\end{frame}
+\begin{frame}{Outline}
+    \tableofcontents[currentsection, currentsubsection,hideothersubsections]
+\end{frame}
+\begin{frame}[fragile]
+    \frametitle{Functional Modules}
+    \begin{lstlisting}[language=maude]
+            fmod NAT-PLUS is
+                sort Nat .
+             op 0 : -> Nat [ctor] .
+             op s : Nat -> Nat  .
+             op _+_ : Nat Nat -> Nat [assoc comm id: 0] .
+             vars M N : Nat . --- This is a comment
+             eq 0 + M = M .
+             eq s N + s M = s s (N + M) .
+            endfm
+        ***(
+        Maude> in nat-add.maude 
+        Maude> red s(s(0)) + s(0) .
+        result Nat: s s s 0
+        )***
+    \end{lstlisting}
+\end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Including modules}
+        \begin{lstlisting}[language=maude]
+            fmod NAT-LIST-CONSTR is
+                protecting NAT-ADD .
+                sort List .
+             op nil : -> List [ctor] .
+             op _ _ : List Nat -> List [ctor] .
+             endfm
+             *** "1 2 3" -> nil s(0) s(s(0)) s(s(s(0))) ***
+        \end{lstlisting}
+        
+    \end{frame}
+\begin{frame}[fragile]
+    \frametitle{System modules}
+    \scriptsize
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            
+            \begin{lstlisting}[language=maude]
+mod MUTEX is
+    sorts Name Mode Proc Token Conf .
+    subsorts Token Proc < Conf .
+ op __ : Conf Conf -> Conf [ctor assoc comm id: none] .
+ ops a b : -> Name [ctor] .
+ op none : -> Conf [ctor] .
+ op [_,_] : Name Mode -> Proc [ctor] .
+ ops wait critical : -> Mode [ctor] .
+ ops * $ : -> Token [ctor] .
+ rl [a-enter] : $ [a, wait] => [a, critical] .
+ rl [b-enter] : * [b, wait] => [b, critical] .
+ rl [a-exit] : [a, critical] => [a, wait] * .
+ rl [b-exit] : [b, critical] => [b, wait] $ .
+endm
+            \end{lstlisting}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{lstlisting}[language=maude]
+       load mutex.maude
+       load model-checker.maude
+       
+       mod MUTEX-PREDS is
+           protecting MUTEX .
+           including SATISFACTION .
+           subsort Conf < State .
+           op crit : Name -> Prop .
+           op wait : Name -> Prop .
+           var N : Name .
+           var C : Conf .
+           var P : Prop .
+           eq [N, critical] C |= 
+                crit(N) = true .
+           eq [N, wait] C |=
+                wait(N) = true .
+           eq C |= P = false [owise] .
+       endm
+            \end{lstlisting}
+        \end{column}
+    \end{columns}
+    
+\end{frame}
+\begin{frame}[fragile]
+    \scriptsize
+    \frametitle{Model checking MUTEX}
+    \begin{lstlisting}[language=maude]
+         load mutex-preds.maude
+        mod MUTEX-CHECK is
+            protecting MUTEX-PREDS .
+            including MODEL-CHECKER .
+            including LTL-SIMPLIFIER .
+         ops initial1 initial2 : -> Conf .
+         eq initial1 = $ [a, wait] [b, wait] .
+         eq initial2 = * [a, wait] [b, wait] .
+        endm
+***(
+Maude> red modelCheck(initial1, [] ~(crit(a) /\ crit(b))) .
+reduce in MUTEX-CHECK : modelCheck(initial1, []~ (crit(a) /\ crit(b))) .
+rewrites: 22 in 10ms cpu (434ms real) (2200 rewrites/second)
+result Bool: true
+
+Maude> red modelCheck(initial2, [] ~(crit(a) /\ crit(b))) .
+reduce in MUTEX-CHECK : modelCheck(initial2, []~ (crit(a) /\ crit(b))) .
+rewrites: 22 in 0ms cpu (0ms real) (~ rewrites/second)
+result Bool: true
+)***
+    \end{lstlisting}
+\end{frame}
+\begin{frame}
+    \frametitle{The meta level }
+    Maude exploits the reflective nature of rewriting logic. Every maude \emph{module} \textbf{$M$} can be represented  as 
+    a \emph{term} \textbf{$\overline{M}$} of \emph{Sort} \textbf{Module}. 
+
+    \bigskip
+    \pause 
+    Fundamental for developing tools in Maude. \emph{Full Maude}, Real Time Maude and all the 
+    other extensions make use of this property.
+    
+    \pause
+    \bigskip 
+    Maude efficiently implements the universal theory $\mathcal{U}$ in the META-* modules
+
+\end{frame}
+\subsection{Maude by example}
 \section{Applications}
 \end{document}
