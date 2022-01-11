@@ -7,6 +7,7 @@
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{proof}
+\usepackage{bussproofs}
 \usepackage{listings}
 \usepackage{amsmath}
 
@@ -109,41 +110,17 @@
 \section{Foundations}
 \begin{frame}
     \frametitle{A logic of action}
-    The rules of 
+    The rules of rewriting logic resemble those of equational logic, but the meaning is very different
+
+    \begin{center}
+        \textbf{Rewriting logic is a logic to reason about \emph{change} in a concurrent system, \emph{not about equality}}
+    \end{center}
+\pause 
+
+\bigskip 
+Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
 \end{frame}
-\begin{frame}[fragile]
-    \begin{columns}
-        \begin{column}{.5\textwidth}
-            \scriptsize
-\begin{lstlisting}[language=maude]
-fmod NAT is 
-    sort NAT .
- op 0 : -> Nat .
- op s_ : Nat -> Nat .
- op _+_: Nat Nat -> Nat [comm].
- vars N M : Nat .
- eq N + 0 = N .
- eq (s N) + (s M) = s s (N + M).
-endfm
-\end{lstlisting}
-        \end{column}
-        \begin{column}{.5\textwidth}
-            \scriptsize
-\begin{lstlisting}[language=maude]
-fmod REVERSE is 
-    protecting NAT .
- subsorts Nat < Tree .
- op _^_ : Tree Tree  -> Tree .
- op rev : Tree -> Tree .
- var N : Nat .
- vars T T' : Tree .
- eq rev(N) : N .
- eq rev (T ^ T') = rev(T') ^ rev(T).
-endfm
-\end{lstlisting}
-        \end{column}
-    \end{columns}
-\end{frame}
+
 \begin{frame}
     \frametitle{Rewrite Theory}
     \begin{center}
@@ -177,7 +154,7 @@ endfm
     \end{center}
     is written as 
     $$
-    r:[t] \rightarrow [t']\ if\ \underbrace{[u_1]\rightarrow[v_1] \wedge \cdots \wedge [u_k] \rightarrow [v_k]\onslide<2->}_{condition\ C}
+    r:[t] \rightarrow [t']\ if\ \underbrace{[u_1]\rightarrow[v_1] \wedge \cdots \wedge [u_k] \rightarrow [v_k] \pause}_{condition\ C}
     $$
     
     \bigskip
@@ -191,7 +168,8 @@ endfm
     If all the rules are unconditional , we have an \emph{unconditional rewrite theory}
 \end{frame}
 \begin{frame}
-    NAT-CHOICE is a rewrite theory
+
+    An example: natural numbers with a nondeterministic choice operator 
     
     \pause
     \begin{itemize}
@@ -203,7 +181,7 @@ endfm
             \vspace{-5mm}
             \begin{align*}
                 &r1: N+0 \rightarrow N \\ 
-                &r2: (s N) + (s M) \rightarrow s s (N + M) \\ 
+                &r2: (s\ N) + (s\ M) \rightarrow s\ s\ (N + M) \\ 
                 &r3: N ? M \rightarrow N \\ 
                 &r4: N ? M \rightarrow M 
             \end{align*}
@@ -238,10 +216,17 @@ endfm
             &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_n(\overline{x})] \rightarrow [v_n(\overline{x})]
         \end{align*}
         in $R$,
-        $$
-        \infer[]{[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w'}/ \overline{x})] }
-        {} 
-        $$
+        \begin{prooftree}
+            \alwaysNoLine
+            \AxiomC{$[w_1] \rightarrow [w_1']$}
+            \UnaryInfC{$[u_1(\overline{w}/ \overline{x})] \rightarrow [v_1(\overline{w}/ \overline{x})]$}
+                \AxiomC{$\cdots$}
+                \UnaryInfC{$\cdots$}
+                    \AxiomC{$[w_n] \rightarrow [w_n']$}
+                    \UnaryInfC{$[u_k(\overline{w}/ \overline{x})] \rightarrow [v_k(\overline{w}/ \overline{x})]$}
+                \alwaysSingleLine
+                \TrinaryInfC{$[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w'}/ \overline{x})]$}
+        \end{prooftree}
 
         \item \emph{Transitivity}
         $$
@@ -264,7 +249,7 @@ endfm
         $$
         \infer[]
         {[t(w_1)/x_{i_1},\cdots,w_n/x_{i_n}] \rightarrow [t'(w_1')/x_{i_1},\cdots,w_n'/x_{i_n}]}
-        {[t(x_{i_1},\cdots,x_{i_n})] \rightarrow [t'(x_{i_1},\cdots,x_{i_n})] [w_1] \rightarrow [w_1'] \cdots [w_n] \rightarrow [w_n']} 
+        {[t(x_{i_1},\cdots,x_{i_n})] \rightarrow [t'(x_{i_1},\cdots,x_{i_n})] \quad [w_1] \rightarrow [w_1'] \cdots [w_n] \rightarrow [w_n']} 
         $$
     \end{enumerate}
     
@@ -280,6 +265,56 @@ endfm
         \infer[]{[t_2] \rightarrow [t_1]}{[t_1] \rightarrow [t_2]} 
         $$
     \end{enumerate}
+    \pause 
+    
+    \bigskip 
+    We can now give the definition of \emph{concurrent rewriting}
+\end{frame}
+\begin{frame}
+    \frametitle{Concurrent rewriting}
+    $\mathcal{R} = (\Sigma, E, L, R)$
+    \small
+    
+    \pause
+    \medskip
+    A $(\Sigma, E)$ sequent $[t] \rightarrow [t']$ is called:\begin{itemize}
+        \item a \emph{0-step concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite application 
+        of rules (1) and (2)
+        \pause
+        \item a \emph{one-step concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$
+        by finite applications of rules (1)-(3), with at least one application of (3)
+        \pause
+        \item a \emph{concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite applications of rules (1)-(4)
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    $\mathcal{R} = (\Sigma, E, L, R)$
+    \small
+    \begin{block}{Lemma}
+        For each concurrent $\mathcal{R}$-rewrite $[t] \rightarrow [t']$
+        either $[t] = [t']$ or there is a $n  \in \mathbb{N} $ and a chain  of one step (concurrent) rewrites 
+        $$
+        \underbrace{[t] \rightarrow [t_1] \rightarrow \cdots \rightarrow [t_n] \rightarrow [t'] \onslide<2->}_{step\ seqeunce}
+        $$ 
+    \end{block}
+
+    \onslide<3->{
+    \medskip
+    $\mathcal{R}$ is \emph{terminating} if there is no infinite chain of one step rewrites 
+
+    \medskip
+    $[t']$ is an $\mathcal{R}-normal\ form$ of $[t]$ if $[t] \rightarrow [t']$ is an 
+    $\mathcal{R}$-rewrite and there is no $[t'] \rightarrow [t'']$ one-step  $\mathcal{R}$-rewrite
+    }
+
+    \onslide<4->{
+    
+    \medskip
+    $\mathcal{R}$ is \emph{Church-Rosser} or \emph{confluent} if
+    \begin{figure}
+        \includegraphics[scale=0.2]{img/churchrosser.png}
+    \end{figure}
+    }
 \end{frame}
 \section{Semantic model}
 \section{Maude}
