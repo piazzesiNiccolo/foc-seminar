@@ -394,6 +394,8 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
         \end{lstlisting}
         
     \end{frame}
+
+
 \begin{frame}[fragile]
     \frametitle{System modules}
     \scriptsize
@@ -401,10 +403,59 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
         \begin{column}{.5\textwidth}
             
             \begin{lstlisting}[language=maude]
+ fmod VENDING-MACHINE-SIGNATURE is
+    sorts Coin Item Marking .
+    subsorts Coin Item < Marking .
+ op __ : Marking Marking ->
+    Marking [assoc comm id: null] .
+ op null : -> Marking .
+ op $ : -> Coin [format (r! o)] .
+ op q : -> Coin [format (r! o)] .
+ op a : -> Item [format (b! o)] .
+ op c : -> Item [format (b! o)] .
+endfm
+            \end{lstlisting}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{lstlisting}[language=maude]
+        load vending-machine-signature.maude
+        mod VENDING-MACHINE is
+            including VENDING-MACHINE-SIGNATURE .
+            var M : Marking .
+         rl [add-q] : M => M q .
+         rl [add-$] : M => M $ .
+         rl [buy-c] : $ => c .
+         rl [buy-a] : $ => a q .
+         rl [change] : q q q q => $ .
+         endm
+    \end{lstlisting}
+        \end{column}
+    \end{columns}
+   \begin{lstlisting}[language=maude]
+Maude>  rew [3] $ $ q q .        result Marking: $ $ $ q q q q
+    
+        frew[2] $ $ q q .  result (sort not calculated): ($ q) ($ $) q q                 
+        
+        search [4, 10] $ q q q =>+ a c c M:Marking 
+            such that M:Marking =/= null .
+        
+        Solution 1 (state 108) M --> q q q q 
+            ...
+    \end{lstlisting} 
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Model checking}
+    \scriptsize
+    \begin{columns}
+        \begin{column}{.6\textwidth}
+            
+            \begin{lstlisting}[language=maude]
 mod MUTEX is
     sorts Name Mode Proc Token Conf .
     subsorts Token Proc < Conf .
- op __ : Conf Conf -> Conf [ctor assoc comm id: none] .
+ op __ : Conf Conf -> 
+    Conf [ctor assoc comm id: none] .
  ops a b : -> Name [ctor] .
  op none : -> Conf [ctor] .
  op [_,_] : Name Mode -> Proc [ctor] .
@@ -417,26 +468,26 @@ mod MUTEX is
 endm
             \end{lstlisting}
         \end{column}
-        \begin{column}{.5\textwidth}
+        \begin{column}{.4\textwidth}
             \begin{lstlisting}[language=maude]
-       load mutex.maude
-       load model-checker.maude
-       
-       mod MUTEX-PREDS is
-           protecting MUTEX .
-           including SATISFACTION .
-           subsort Conf < State .
-           op crit : Name -> Prop .
-           op wait : Name -> Prop .
-           var N : Name .
-           var C : Conf .
-           var P : Prop .
-           eq [N, critical] C |= 
-                crit(N) = true .
-           eq [N, wait] C |=
-                wait(N) = true .
-           eq C |= P = false [owise] .
-       endm
+    load mutex.maude
+    load model-checker.maude
+    
+    mod MUTEX-PREDS is
+        protecting MUTEX .
+        including SATISFACTION .
+        subsort Conf < State .
+      op crit : Name -> Prop .
+      op wait : Name -> Prop .
+      var N : Name .
+      var C : Conf .
+      var P : Prop .
+      eq [N, critical] C |= 
+              crit(N) = true .
+      eq [N, wait] C |=
+              wait(N) = true .
+      eq C |= P = false [owise] .
+    endm
             \end{lstlisting}
         \end{column}
     \end{columns}
@@ -444,7 +495,7 @@ endm
 \end{frame}
 \begin{frame}[fragile]
     \scriptsize
-    \frametitle{Model checking MUTEX}
+    \frametitle{Model checking}
     \begin{lstlisting}[language=maude]
          load mutex-preds.maude
         mod MUTEX-CHECK is
@@ -482,6 +533,35 @@ result Bool: true
     \bigskip 
     Maude efficiently implements the universal theory $\mathcal{U}$ in the META-* modules
 
+\end{frame}
+\begin{frame}[fragile]
+    \scriptsize
+    \frametitle{Objects in Full Maude}
+    \begin{lstlisting}[language=maude]
+    (omod ACCNT is 
+        protecting QID .
+        protecting MACHINE-INT .
+        subsort Qid < Oid .
+        class Accnt | bal : MachineInt .  
+        
+        msgs credit debit : Oid MachineInt -> Msg .  
+        msg transfer_from_to_ : MachineInt Oid Oid -> Msg .  
+
+        vars A B : Oid . 
+        vars M N N' : MachineInt .  
+
+     rl [credit] : credit(A, M) < A : Accnt | bal : N >
+       => < A : Accnt | bal : (N + M) > .  
+     crl [debit] : debit(A, M) < A : Accnt | bal : N >
+       => < A : Accnt | bal : (N - M) >
+          if N > M .  
+     crl [transfer] : (transfer M from A to B)
+       < A : Accnt | bal : N > < B : Accnt | bal : N' > 
+       => < A : Accnt | bal : (N - M) > 
+          < B : Accnt | bal : (N' + M) >
+          if N > M . 
+    endom)
+    \end{lstlisting}
 \end{frame}
 \subsection{Maude by example}
 \section{Applications}
