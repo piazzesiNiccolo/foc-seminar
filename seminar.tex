@@ -633,5 +633,113 @@ result Bool: true
         \item Introduced MegaStore CGC, an extension that provides consistency for transactions 
         accessing multiple entity groups 
     \end{itemize} 
+    
 \end{frame}
+\begin{frame}
+    \frametitle{Main ideas}
+
+    \begin{itemize}
+        \item A site participates in all updates involving the entity groups it replicates 
+            \begin{itemize}
+                \item Implicit ordering on these updates
+                \item \textbf{Idea}: make the order \emph{explicit}
+                \item Valida transactions on multiple entity groups before commit 
+            \end{itemize}
+            
+        \bigskip
+        \pause
+        \item Formal test driven development 
+            \begin{enumerate}
+                \item Express requirements as LTL formulas
+                \item Develop Real Time Maude model 
+                \item Test model through simulation and model checking 
+                \item Analyse failures and modify the model
+            \end{enumerate}
+    \end{itemize}
+\end{frame}
+\begin{frame}[fragile]
+    \scriptsize
+    \frametitle{MegaStore Maude fragments}
+    \begin{lstlisting}[language=maude]
+class Site | entityGroups : Configuration, localTransactions : Configuration,
+            coordinator : EntGroupLogPosPairSet, egOrderings : OrderClassUpdates,
+            awaitingOrder : EntGroupUpdateList .
+
+class EntityGroup | entitiesState : EntitySet, transactionLog : LogEntryList,
+                    replicas : EntityGroupReplicaSet, proposals : PaxosProposalSet,
+                    pendingWrites : PendingWriteList .
+
+class Transaction | operations : OperationList, status : TransStatus,
+                    reads : EntitySet, readState : ReadStateSet,
+                    writes : OperationList, paxosState : PaxosStateSet .
+    \end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]
+    \scriptsize
+    \begin{lstlisting}[language=maude]
+crl [initiateCommit] :
+    < SID' : Site |
+    entityGroups EGROUPS,
+    localTransactions : LOCALTRANS
+    < TID : Transaction | operations : emptyOpList,
+    writes : WRITEOPS, status : idle
+    readState : RSTATE, paxosState : PSTATE > >
+    =>
+    < SID : Site |
+    localTransactions : LOCALTRANS
+    < TID : Transaction | paxosState : NEW-PAXOS-STATE,
+    status : in-paxos > >
+    ACC-LEADER-REQ-MSGS
+if EIDSET := getEntityGroupIds(WRITEOPS) /\
+    NEW-PAXOS-STATE := initiatePaxosState(EIDSET, TID, WRITEOPS,
+    SID, RSTATE, EGROUPS)
+/\ (createAcceptLeaderMessages(SID, NEW-PAXOS-STATE)) => ACC-LEADER-REQ-MSGS
+    \end{lstlisting}
+
+\end{frame}
+\begin{frame}[fragile]
+    \scriptsize 
+    \begin{lstlisting}[language=maude]
+crl [rcvAcceptAllReq] :
+(msg acceptAllReq(TID, EG, (TID' LP SID OL), PROPNUM) from SENDER to THIS)
+    < THIS : Site |
+    entityGroups : EGROUPS
+    < EG : EntityGroup | proposals : PROPSET, transactionLog : LEL > >
+  =>
+    < THIS : Site |
+    entityGroups : EGROUPS
+    < EG : EntityGroup |
+    proposals : accepted(SENDER, (TID' LP SID OL), PROPNUM) ;
+    removeProposal(LP, PROPSET) > >
+    dly(acceptAllRsp(TID, EG, LP, PROPNUM) from THIS to SENDER), T)
+if not (containsLPos(LP, LEL) or hasAcceptedForPosition(LP, PROPSET))
+/\ T ; TS := possibleMessageDelay(THIS, SENDER) .       
+    \end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]
+    \frametitle{LTL requirements}
+    Desired Property: 
+    \begin{lstlisting}[language=maude, basicstyle=\scriptsize]
+    <> [] (allTransFinished /\ entityGroupsEqualOrInvalid
+    /\ transLogsEqualOrInvalid /\ isSerializable)
+    \end{lstlisting}
+
+    \pause
+    All replicas are equal Property:
+    \begin{lstlisting}[language=maude, basicstyle=\scriptsize]
+    op entityGroupsEqualOrInvalid : -> Prop [ctor] .
+    
+    ceq {< S1 : Site | coordinator : eglp(EG1, LP) ; EGLP,
+                    entityGroups :
+                    < EG1 : EntityGroup | entitiesState : ES1 > EGS1 >
+        < S2 : Site | coordinator : eglp(EG1, LP) ; EGLP,
+                    entityGroups :
+                    < EG1 : EntityGroup | entitiesState : ES2 > EGS2 >
+    REST} |= entityGroupsEqual = false if ES1 =/= ES2 .
+    
+    eq {SYSTEM} |= entityGroupsEqualOrInvalid = true [owise] .
+    \end{lstlisting}
+\end{frame}
+
+
 \end{document}
