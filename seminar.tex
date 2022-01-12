@@ -365,20 +365,20 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
 \begin{frame}[fragile]
     \frametitle{Functional Modules}
     \begin{lstlisting}[language=maude]
-            fmod NAT-PLUS is
+            fmod NAT-ADD is
                 sort Nat .
              op 0 : -> Nat [ctor] .
-             op s : Nat -> Nat  .
+             op s_ : Nat -> Nat  .
              op _+_ : Nat Nat -> Nat [assoc comm id: 0] .
              vars M N : Nat . --- This is a comment
-             eq 0 + M = M .
              eq s N + s M = s s (N + M) .
             endfm
-        ***(
-        Maude> in nat-add.maude 
-        Maude> red s(s(0)) + s(0) .
-        result Nat: s s s 0
-        )***
+
+Maude> in nat-add.maude 
+
+Maude> red s(s(0)) + s(0) .
+result Nat: s s s 0
+
     \end{lstlisting}
 \end{frame}
     \begin{frame}[fragile]
@@ -565,4 +565,73 @@ result Bool: true
 \end{frame}
 \subsection{Maude by example}
 \section{Applications}
+\begin{frame}
+    \frametitle{Applications}
+    \begin{itemize}
+        \item Formalization of programming languages 
+        \begin{itemize}
+            \item C
+            \item Java, JVM
+            \item Scheme
+            \item K framework
+            \item ...
+        \end{itemize}
+        \item Security: uncovering unknown attacks on web browsers 
+        \item Logical framework 
+        \begin{itemize}
+            \item Barendregt's lambda cube 
+            \item Linear logic 
+            \item Modal logic
+            \item ...
+        \end{itemize}
+        \item Biology : Pathway logic 
+        \item Cloud transactions: \textcolor{red}{Google's Megastore}, Cassandra,...
+    \end{itemize}
+
+    For reference:
+
+    http://maude.cs.illinois.edu/w/index.php/Applications
+\end{frame}
+\begin{frame}
+    \frametitle{Google Megastore}
+    \begin{itemize}
+        \item Google's replicated data store 
+        \item Billions  of read/write daily transactions 
+        \item Adds (limited) support for transactions  in distributed data stores   
+    \end{itemize}
+    \begin{figure}
+        \includegraphics[width=\textwidth]{img/megastore.png}
+    \end{figure}
+\end{frame}
+\begin{frame}
+    \begin{itemize}
+        \item Data divided into \textbf{entity groups} 
+        \item \textbf{Replicated transaction log}  for each group
+        \item Two phase commits with a paxos-based protocol 
+    \end{itemize}
+    \begin{figure}
+        \includegraphics[scale=0.2]{img/paxos.png}
+    \end{figure}
+\end{frame}
+\begin{frame}
+    \frametitle{Issues}
+    \begin{itemize}
+        \item Original overview definition very informal, \textbf{really complex system}
+        \item No consistency guarantee if a transaction reads multiple entity groups
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    \frametitle{MegaStore CGC}
+
+    Work by  Grov and $\ddot{\text{O}}$lveczky 
+    \begin{itemize}
+        \item Formalized Google MegaStore in Real-Time Maude
+        \begin{itemize}
+            \item 56 rewrite rules 
+            \item Use  of simulation and model checking to discover bugs during development
+        \end{itemize} 
+        \item Introduced MegaStore CGC, an extension that provides consistency for transactions 
+        accessing multiple entity groups 
+    \end{itemize} 
+\end{frame}
 \end{document}
