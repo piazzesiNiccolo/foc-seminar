@@ -488,11 +488,10 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \end{align*}
 \end{frame}
 \begin{frame}
-    \frametitle{R-presystems}
     \scriptsize
     \begin{block}{R-presystem}
         Given a rewrite theory $\mathcal{R} = (\Sigma, E, L, R)$, an $\mathcal{R}-presystem$
-        is a reflexive graph $G$ together with: \begin{enumerate}[(i)]
+        is a reflexive graph $G$ together with: \begin{enumerate}
             \item a $\Sigma$-algebra structure onn $G$ such that the $\Sigma$-algebra Nodes of nodes
             satisfies the equation in $E$;
             \item an operation 
@@ -509,8 +508,28 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
                 | \partial_0^k(\overline{b}^k) = \overline{u_{Nodes}(\partial_0^n(\overline{a}^n))}^k \\
                 &\wedge  \partial_1^k(\overline{b}^k) = \overline{v_{Nodes}(\partial_0^n(\overline{a}^n))}^k\} \rightarrow Arrows
             \end{align*}
+        such that $$ r(\overline{a}^n,\overline{b}^k) : t_{Nodes}(\partial_0^n(\overline{a}^n)) \rightarrow t_{Nodes}'(\partial_1^n(\overline{a}^n))$$
         \end{enumerate}
     \end{block}
+\end{frame}
+\begin{frame}
+    \small
+    \begin{block}{$\mathcal{R}$-prehomomorphism}
+        Given two $\mathcal{R}$-presystems G and G', an $\mathcal{R}$-prehomomorphism is a 
+        graph omomorphism that preserves all the operations in $\Sigma$, the operation $\_;\_$ and the operation $r(\_,\_)$ for $r \in R$.
+        With this, we can define the category $\underline{\mathcal{R}\text{-PreSys}}$.
+    \end{block}
+    
+    \pause
+    \begin{block}{Propostion}
+        The forgetful functor 
+        $$Nodes: \underline{\mathcal{R}\text{-PreSys}} \rightarrow \underline{Set}$$
+        sending each $\mathcal{R}$-presystem to its set of nodes has a left adjoint.
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{$\mathcal{T_R}(X)$}
 \end{frame}
 \section{Maude}
 \begin{frame}
