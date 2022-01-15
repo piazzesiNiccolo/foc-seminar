@@ -404,7 +404,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
                     \AxiomC{$\alpha_n : [w_n] \rightarrow [w_n']$}
                     \UnaryInfC{$\beta_k : [u_k(\overline{w}/ \overline{x})] \rightarrow [v_k(\overline{w}/ \overline{x})]$}
                 \alwaysSingleLine
-                \TrinaryInfC{$r(\overline{\alpha}^k,\overline{\beta}^k)[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w}'/ \overline{x})]$}
+                \TrinaryInfC{$r(\overline{\alpha}^n,\overline{\beta}^k)[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w}'/ \overline{x})]$}
         \end{prooftree}
 
         \item \emph{Composition}
@@ -433,11 +433,84 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \pause 
     \textbf{Note:}
 
-    Ambiguity problems, which may arise when  the same label \emph{r} appears in two different rules of R are assumed 
+    Ambiguity problems, which may arise when  the same label \emph{r} appears in two different rules of R, are assumed 
     to be resolved by disambiguating \emph{r}  in the proof term $r(\overline{\alpha},\overline{\beta})$
 \end{frame}
 \begin{frame}
     \frametitle{$\mathcal{P_R}(X)$}
+
+    Each of the generation rules (1)-(4) defines an operation taking certain proof terms as argument and returning 
+    a resulting proof term.
+
+    \bigskip
+    \pause 
+    In other words, proof terms form an algebraic structure $\mathcal{P_R}(X)$ defined by the generation rules
+
+    \bigskip
+    \pause 
+    More specifically, the generated structure is a graph $\mathcal{G}$ where: 
+    \begin{itemize}
+        \item $Nodes = T_{\Sigma,E}(X)$
+        \item $Arrows = \mathcal{P_R}(X)$
+        \item $\partial_0 (\textbf{source}), \partial_1 (\textbf{target}) : \mathcal{P_R}(X) \rightarrow T_{\Sigma,E}(X)$
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    \scriptsize
+    Rule (1) requires each node $[t]$ to also be an arrow $[t] : [t] \rightarrow [t]$, making $\mathcal{G}$ \emph{reflexive}
+
+    \bigskip
+    \pause
+
+    By rule (2), $\mathcal{P_R}(X)$ has a $\Sigma$-algebra structure where $\partial_0,\partial_1$ are 
+    $\Sigma$-omomorphisms
+
+    \bigskip
+    \pause
+    Rule (4) defines a new operation:
+    $$
+    \_;\_ : Composable(\mathcal{P_R(X)}) \rightarrow \mathcal{P_R(X)}
+    $$
+    where $\partial_0(a;b) = \partial_0(a)$ and $\partial_1(a;b) = \partial_1(b)$
+
+    \bigskip
+    \pause
+    By rule (3),for each rewrite rule 
+    \begin{align*}
+        r:&[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\ 
+        &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_k(\overline{x})] \rightarrow [v_k(\overline{x})] 
+    \end{align*}
+    we define an operation 
+    \begin{align*}
+        r(\_,_) : \{(\overline{\alpha}^n,\overline{\beta}^k) \in \mathcal{P_R}(X&)^{n+k} 
+        | \partial_0^k(\overline{\beta}^k) = \overline{[u(\partial_0^n(\overline{\alpha}^n)\overline{x})]}^k \\
+        &\wedge  \partial_1^k(\overline{\beta}^k) = \overline{[v(\partial_0^n(\overline{\alpha}^n)\overline{x})]}^k\} \rightarrow \mathcal{P_R}(X)
+    \end{align*}
+\end{frame}
+\begin{frame}
+    \frametitle{R-presystems}
+    \scriptsize
+    \begin{block}{R-presystem}
+        Given a rewrite theory $\mathcal{R} = (\Sigma, E, L, R)$, an $\mathcal{R}-presystem$
+        is a reflexive graph $G$ together with: \begin{enumerate}[(i)]
+            \item a $\Sigma$-algebra structure onn $G$ such that the $\Sigma$-algebra Nodes of nodes
+            satisfies the equation in $E$;
+            \item an operation 
+            $$ \_;\_ : Composable(G) \rightarrow Arrows$$
+            with $\partial_0(a;b) = \partial_0(a)$ and $\partial_1(a;b) = \partial_1(b)$
+            \item for each rewrite rule 
+            \begin{align*}
+                r:&[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\ 
+                &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_k(\overline{x})] \rightarrow [v_k(\overline{x})] 
+            \end{align*}
+            in $R$, an operation  
+            \begin{align*}
+                r(\_,_) : \{(\overline{a}^n,\overline{b}^k) \in Arrows^{n+k}& 
+                | \partial_0^k(\overline{b}^k) = \overline{u_{Nodes}(\partial_0^n(\overline{a}^n))}^k \\
+                &\wedge  \partial_1^k(\overline{b}^k) = \overline{v_{Nodes}(\partial_0^n(\overline{a}^n))}^k\} \rightarrow Arrows
+            \end{align*}
+        \end{enumerate}
+    \end{block}
 \end{frame}
 \section{Maude}
 \begin{frame}
