@@ -225,7 +225,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
                     \AxiomC{$[w_n] \rightarrow [w_n']$}
                     \UnaryInfC{$[u_k(\overline{w}/ \overline{x})] \rightarrow [v_k(\overline{w}/ \overline{x})]$}
                 \alwaysSingleLine
-                \TrinaryInfC{$[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w'}/ \overline{x})]$}
+                \TrinaryInfC{$[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w}'/ \overline{x})]$}
         \end{prooftree}
 
         \item \emph{Transitivity}
@@ -334,6 +334,111 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     This property is fundamental for the applications of RL, as we will see in Maude.
 \end{frame}
 \section{Semantic model}
+\begin{frame}
+    \begin{block}{What we have}
+    $ R = (\Sigma, E, L, R)$
+
+    \emph{Static description} of what a system can do 
+        
+    \end{block}
+    
+    \pause
+
+    \begin{block}{What we want}
+        \emph{Computational models} of the system behaviour (the \emph{meaning of the theory})
+    \end{block}
+
+    \pause
+
+    \begin{block}{Idea}
+        Take advantage of the correspondence between  \emph{deductions} in rewriting logic 
+        and \emph{concurrent computations}
+    \end{block}
+\end{frame}
+\begin{frame}
+    \frametitle{The model }
+    $
+    R = (\Sigma, E, L, R)
+    $
+
+    \pause 
+    \bigskip
+    We seek a \textcolor{red}{category} $\mathcal{T_R(X)}$:\begin{itemize}
+        \item Objects: \textcolor{blue}{$[t]_E$}
+        \item Arrows: \textcolor{blue}{$[t_1]_E \xrightarrow{\pi} [t_2]_E$}
+    \end{itemize}
+
+    \pause 
+    \bigskip
+    \emph{Generator rules}: obtained by the rules of deduction (1)-(4) by decorating 
+    the sequents with appropriate proof terms
+\end{frame}
+\begin{frame}
+    \frametitle{Rules of generation}
+    \scriptsize 
+    \begin{enumerate}
+        \item \emph{Identities.} For each $[t] \in T_{\Sigma, E}(\mathbb{X})$,
+        $$
+        \infer[]{[t]: [t] \rightarrow [t]}{}
+        $$
+
+        \item $\Sigma-structure$. For each $f \in \Sigma_n, n \in \mathbb{N}$,
+        $$
+        \infer[]
+        {f(\alpha_1, \cdots, \alpha_n): [f(t_1, \cdots, t_n)] \rightarrow [f(t_1', \cdots, t_n')]}
+        {\alpha_1: [t_1]}
+        $$
+
+        \item \emph{Replacement.} For each rewrite rule 
+        \begin{align*}
+        r:&[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\ 
+        &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_k(\overline{x})] \rightarrow [v_k(\overline{x})] 
+        \end{align*}
+        in $\mathbb{R}$,
+        \begin{prooftree}
+            \alwaysNoLine
+            \AxiomC{$\alpha_1 : [w_1] \rightarrow [w_1']$}
+            \UnaryInfC{$\beta_1 : [u_1(\overline{w}/ \overline{x})] \rightarrow [v_1(\overline{w}/ \overline{x})]$}
+                \AxiomC{$\cdots$}
+                \UnaryInfC{$\cdots$}
+                    \AxiomC{$\alpha_n : [w_n] \rightarrow [w_n']$}
+                    \UnaryInfC{$\beta_k : [u_k(\overline{w}/ \overline{x})] \rightarrow [v_k(\overline{w}/ \overline{x})]$}
+                \alwaysSingleLine
+                \TrinaryInfC{$r(\overline{\alpha}^k,\overline{\beta}^k)[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w}'/ \overline{x})]$}
+        \end{prooftree}
+
+        \item \emph{Composition}
+        $$
+        \infer[]{\alpha;\beta : [t_1] \rightarrow [t_3]}{\alpha : [t_1] \rightarrow [t_2] \quad \beta : [t_2] \rightarrow [t_3]} 
+        $$
+    \end{enumerate}
+\end{frame}
+\begin{frame}
+    For equational logic we can define a similar category $\mathcal{T_R}^{\leftrightarrow}(X)$ ( a \emph{groupoid}) by using 
+    the rule of simmetry to generate additional terms 
+    
+    \bigskip 
+    {
+    \scriptsize
+    \begin{enumerate}
+        \setcounter{enumi}{4}
+        \item  \emph{Inversion}. 
+        $$
+        \infer[]{\alpha^{-1} : [t_2] \rightarrow [t_1]}{\alpha : [t_1] \rightarrow [t_2]}
+        $$
+    \end{enumerate}
+    }
+
+    \bigskip
+    \pause 
+    \textbf{Note:}
+
+    Ambiguity problems, which may arise when  the same label \emph{r} appears in two different rules of R are assumed 
+    to be resolved by disambiguating \emph{r}  in the proof term $r(\overline{\alpha},\overline{\beta})$
+\end{frame}
+\begin{frame}
+    \frametitle{$\mathcal{P_R}(X)$}
+\end{frame}
 \section{Maude}
 \begin{frame}
     \frametitle{What is Maude}
