@@ -528,8 +528,194 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \end{block}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
+    \scriptsize
     \frametitle{$\mathcal{T_R}(X)$}
+    Given a rewrite theory $\mathcal{R}$, the model $\mathcal{T_R}(X)$ is the quotient of 
+    $\mathcal{P_R}(X)$ modulo the following equations:
+    
+    \begin{enumerate}
+        \item \emph{Category}.
+        \begin{enumerate}[a]
+            \scriptsize
+            \item Associativity. For all $\alpha,\beta,\gamma$,
+            
+            $(\alpha;\beta);\gamma = \alpha;(\beta;\gamma).$
+            \item Identities. For each $\alpha: [t] \rightarrow [t']$,
+            
+            $\alpha;[t'] = \alpha,\quad [t];\alpha=\alpha.$
+        \end{enumerate}
+        \item \emph{Functioriality.}. For each $f \in \Sigma_n, n \in \mathbb{N}$,
+        \begin{enumerate}[a]
+            \scriptsize
+            \item Preservation of composition. For all $\alpha_1,\cdots,\alpha_n,\beta_1,\cdots,\beta_n$,
+            
+            $f(\alpha_1;\beta_1,\cdots,\alpha_n;\beta_n) = f(\alpha_1,\cdots,\alpha_n);f(\beta_1,\cdots,\beta_n). $
+            \item Preservation of Identities.
+            
+            $ f([t_1],\cdots,[t_n])=[f(t_1,\cdots,t_n)].$
+        \end{enumerate}
+        \item \emph{Axioms} in $E$. For $t(x_1,\cdots,x_n)=t'(x_1,x_n)$ an axiom in $E$, for all $\alpha_1,\cdots,\alpha_n$,
+        
+        $ t(\alpha_1,\cdots,\alpha_n)=t'(\alpha_1,\cdots,\alpha_n).$
+
+        \item \emph{Decomposition}.  For each rewrite rule 
+        \begin{align*}
+        r:&[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\ 
+        &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_k(\overline{x})] \rightarrow [v_k(\overline{x})] 
+        \end{align*}
+        in $\mathbb{R}$,
+        \begin{prooftree}
+            \alwaysNoLine
+            \AxiomC{$\alpha_1 : [w_1] \rightarrow [w_1']$}
+            \UnaryInfC{$\beta_1 : [u_1(\overline{w}/ \overline{x})] \rightarrow [v_1(\overline{w}/ \overline{x})]$}
+                \AxiomC{$\cdots$}
+                \UnaryInfC{$\cdots$}
+                    \AxiomC{$\alpha_n : [w_n] \rightarrow [w_n']$}
+                    \UnaryInfC{$\beta_k : [u_k(\overline{w}/ \overline{x})] \rightarrow [v_k(\overline{w}/ \overline{x})]$}
+                \alwaysSingleLine
+                \TrinaryInfC{$r(\overline{\alpha}^n,\overline{\beta}^k) = r([\overline{w}]^n,\overline{\beta}^k);t'(\overline{\alpha}^n)$}
+        \end{prooftree}
+        \item \emph{Exchange}. For each rewrite rule 
+        \begin{align*}
+        r:&[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\ 
+        &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_k(\overline{x})] \rightarrow [v_k(\overline{x})] 
+        \end{align*}
+        in $\mathbb{R}$,
+        \begin{prooftree}
+            \alwaysNoLine
+            \AxiomC{$\alpha_1 : [w_1] \rightarrow [w_1']$}
+            \UnaryInfC{$\beta_1 : [u_1(\overline{w}/ \overline{x})] \rightarrow [v_1(\overline{w}/ \overline{x})]$}
+            \UnaryInfC{$\beta_1' : [u_1(\overline{w'}/ \overline{x})] \rightarrow [v_1(\overline{w'}/ \overline{x})]$}
+            \UnaryInfC{$\beta_1;v_1(\overline{\alpha}) = u_1(\overline{\alpha});\beta_1'$}
+                \AxiomC{$\cdots$}
+                \UnaryInfC{$\cdots$}
+                \UnaryInfC{$\cdots$}
+                \UnaryInfC{$\cdots$}
+                \UnaryInfC{$\cdots$}
+                    \AxiomC{$\alpha_n : [w_n] \rightarrow [w_n']$}
+                    \UnaryInfC{$\beta_k : [u_k(\overline{w}/ \overline{x})] \rightarrow [v_k(\overline{w}/ \overline{x})]$}
+                    \UnaryInfC{$\beta_k' : [u_k(\overline{w'}/ \overline{x})] \rightarrow [v_k(\overline{w'}/ \overline{x})]$}
+                    \UnaryInfC{$\beta_k;v_k(\overline{\alpha}) = u_k(\overline{\alpha});\beta_k'$}
+                \alwaysSingleLine
+                \TrinaryInfC{$r(\overline{[w]}^n,\overline{\beta}^k);t'(\overline{\alpha}) = t(\overline{\alpha});r([\overline{w'}]^n,\overline{\beta'}^k)$}
+        \end{prooftree}
+    \end{enumerate}
+    
+\end{frame}
+\begin{frame}
+    
+    The groupoid $\mathcal{T_R}^{\leftrightarrow}(X)$ is obtained by adding the rule:
+    \begin{enumerate}
+        \setcounter{enumi}{5}
+        \item  \emph{Inverse.} For any $\alpha:[t] \rightarrow [t']$ in $\mathcal{T_R}^{\leftrightarrow}(X)$, 
+    
+        $ \alpha;\alpha^{-1} = [t],\quad \alpha^{-1};\alpha= [t'].$
+    \end{enumerate}
+    \pause
+    \begin{block}{Lemma}
+        For each $ r:[t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$ in $R$, the \emph{family of morphisms}
+        $$ \{r(\overline{[w]}): [t(\overline{w}/\overline{x})] \rightarrow [t'(\overline{w}/\overline{x})] | \overline{[w]} \in T_{\Sigma,E}(X)^n\}$$
+        is a natural transformation
+        $$ r:[t(x_1,\cdots,x_n)] \Rightarrow [t'(x_1,\cdots,x_n)]$$
+        between the functors 
+        $$[t(x_1,\cdots,x_n)],[t'(x_1,\cdots,x_n)]: \mathcal{T_R}(X)^n \rightarrow \mathcal{T_R}(X).$$
+
+    \end{block}
+\end{frame}
+\begin{frame}
+    We can now make precise the mathematical meaning of the \emph{exchange} law.
+    
+    \pause 
+    \begin{block}{Subequalizer}
+        Given functors F,G:$\mathcal{A} \rightarrow \mathcal{B}$, the \textbf{\emph{subequalizer}} of F and G is a 
+        category $Subeq(F,G)$ together with a functor $J:Subeq(F,G) \rightarrow \mathcal{A}$ and a natural transformation 
+        $\alpha: J *  F \Rightarrow J * G$ satisfying the following universal property:
+
+        \bigskip
+        Given a functor $H:\mathcal{C} \rightarrow \mathcal{A}$ and  a natural transformation $\beta:H*F \Rightarrow H*G$, there exists a unique functor 
+        $ (H,\beta):\mathcal{C} \rightarrow Subeq(F,G)$ such that 
+        $$ (H,\beta) * J = H\ and\ (H,\beta)*\alpha = \beta.$$ 
+
+        For a family of pair of functors $\{F_i,G_i:\mathcal{A} \rightarrow \mathcal{B}_i | i \in I\}$,
+        $$ (H,\{\beta_i\}_{i \in I}) * J = H\ and\ (H,\{\beta_i\}_{i \in I})*\alpha_i = \beta_i (i \in I).$$ 
+    \end{block}
+    \pause 
+
+\end{frame}
+\begin{frame}
+    \scriptsize
+    $\mathbf{Subeq((F_i,G_i)_{i \in I})}$:
+    \begin{itemize}
+        \item Objects : $(A,\{b_i\}_{i \in I})$ where $A$ object in $\mathcal{A}$ and $b_i:F_i(A) \rightarrow G_i(A)$ a morphism in $\mathcal{B}_i$.
+        \item Arrows : $$ a: (A,\{b_i\}_{i \in I}) \rightarrow (A',\{b_i\}_{i \in I})$$
+        are morphisms $a: A \rightarrow A'$ in $\mathcal{A}$ such that for each $i \in I,b_i;G_i(A)=F_i(a);b_i'.$
+    \end{itemize}
+
+    \bigskip
+    \pause 
+    Functor J is the projection into the first component. The natural transformation $\alpha_j$ is defined by 
+    $$\alpha_j(A,\{b_i\}_{i \in I}) =  b_j.$$ 
+
+    \bigskip
+    \pause
+    For the exchange law, we are interested in subequalizers of the form 
+    $$ Subeq(([u_j(\overline{x})],[v_j(\overline{x})])_{1 \le j \le k}) $$ 
+    associated  to rewrite rules 
+    \begin{align*}
+        r:&[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\ 
+        &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_k(\overline{x})] \rightarrow [v_k(\overline{x})] 
+    \end{align*} 
+\end{frame}
+\begin{frame}
+    \begin{block}{Lemma}
+        For each rewrite rule
+        \begin{align*}
+            r:&[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if \\ 
+            &[u_1(\overline{x})] \rightarrow [v_1(\overline{x})] \wedge \cdots \wedge [u_k(\overline{x})] \rightarrow [v_k(\overline{x})] 
+            \end{align*}
+        in $R$, the \emph{family of morphisms}
+        \begin{align*}
+            \{r(\overline{[w]}^n,\overline{\beta}^k):&[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w}/ \overline{x})]\ | \\ 
+            &(\overline{[w]}^n,\overline{[\beta]}^k) \in Subeq(([u_j(\overline{x})],[v_j(\overline{x})])_{1 \le j \le k})\}
+            \end{align*}
+        is a natural transformation 
+        $$r: J * [t(x_1,\cdots,x_n)] \Rightarrow J * [t'(x_1,\cdots,x_n)]$$
+        where $J: Subeq(([u_j(\overline{x})],[v_j(\overline{x})])_{1 \le j \le k}) \rightarrow \mathcal{T_R}(X)^n$ is the \emph{subequalizer functor}.
+    \end{block}
+\end{frame}
+\begin{frame}
+    \scriptsize
+    The construction $\mathcal{T_R}$ is very general, includes other constructions as particular cases.
+
+    \pause
+   
+    $$\mathcal{R} : LTS \Rightarrow  \mathcal{T_R} : \underline{Path}$$
+
+    \pause
+    
+    $$\mathcal{R} : \text{Petri nets} \Rightarrow  \mathcal{T_R} : \underline{Petri}$$
+
+\pause 
+\bigskip
+Equations (1)-(5) provides \emph{the most abstract view} of the computations in $\mathcal{R}$. The \emph{decomposition} and \emph{exchange} equations 
+tells us that the order of rewrites performed "above" and "below" a term does not matter.
+\pause 
+\begin{block}{Lemma}
+For each $[\alpha]: [t] \rightarrow [t']$ in $\mathcal{T_R}(X)$, either $[t] = [t']$ and 
+$[\alpha] = [[t]]$, or there  is an $n \in \mathbb{N}$ and a chain of morphisms $[\alpha_i], 0 \le i \le n$ whose terms 
+$\alpha_i$ describe one-step concurrent rewrites 
+$$ [t] \xrightarrow{\alpha_0} [t_1] \xrightarrow{\alpha_1} \cdots \xrightarrow{\alpha_{n-1}} [t_n] \xrightarrow{\alpha_n} [t']$$
+such that $[\alpha] = [\alpha_0;\cdots;\alpha_n].$
+
+The proof is by induction on the depth of proof terms.
+    
+\end{block}
+\pause 
+$\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{R}.$ Let's now see the general model.
+\end{frame}
+\begin{frame}
+    \frametitle{$\mathcal{R}$-systems}
 \end{frame}
 \section{Maude}
 \begin{frame}
