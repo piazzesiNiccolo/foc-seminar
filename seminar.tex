@@ -738,7 +738,7 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
     An $\mathcal{R}-omomorphism\ F: \mathcal{S} \rightarrow \mathcal{S}'$ between two $\mathcal{R}$-systems is a 
     functor $F:\mathcal{S} \rightarrow S'$ such that:
     \begin{itemize}
-        \item it is a $\Sigma$-algebra omomoprhism,i.e, $f_\mathcal{S}*F = F^n*f_{\mathcal{S}'}$ for each $f \in \Sigma_n$
+        \item it is a $\Sigma$-algebra omomorphism,i.e, $f_\mathcal{S}*F = F^n*f_{\mathcal{S}'}$ for each $f \in \Sigma_n$
         \item for each rewrite rule $r:[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if\ C$ in r we have: 
         $$ r_\mathcal{S} * F = F^\bullet * r_{\mathcal{S}'} $$
     \end{itemize}
@@ -825,6 +825,66 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
         The left adjoint that we want is given by the composition of these two left adjoints.
     \end{block}
 \end{frame}
+\begin{frame}
+    \frametitle{Soundness and completness}
+    \scriptsize
+    \begin{block}{Satisfaction}
+        A sequent $[t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$ is \emph{satisfied} by 
+        an $\mathcal{R}$-system $\mathcal{S}$ if there exists a natural transformation
+        $$ \alpha: t_\mathcal{S} \Rightarrow t_\mathcal{S}'$$ 
+        between the functors $t_\mathcal{S},t_\mathcal{S}':\mathcal{S}^n \rightarrow \mathcal{S}.$
+
+        $$ S \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
+    \end{block}
+\pause
+
+For $\Theta \subseteq \underline{\mathcal{R}\text{-Sys}}$,
+$$ \Theta \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
+if the sequent is satisfied by all $\mathcal{R}$-systems in $\Theta$.
+
+\pause 
+$$ \mathcal{R} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
+if the sequent is satisfied by all $\mathcal{R}$-systems
+\end{frame}
+\begin{frame}
+\begin{block}{Soundness}
+    For $\mathcal{R}$ a rewrite theory,
+    $$ \mathcal{R} \vdash [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]
+    $$
+    implies
+    $$\mathcal{R} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]
+    $$ 
+\end{block}
+Proof is by induction on the depth of proof terms.
+\end{frame}
+\begin{frame}
+    \scriptsize
+    \begin{block}{Completness}
+        For $\mathcal{R}$ a rewrite theory,
+        $$ \mathcal{R} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]
+        $$
+        implies
+        $$\mathcal{R} \vdash [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]
+        $$ 
+
+        \pause
+        \bigskip
+        \textbf{Proof}
+
+        Since $\mathcal{R} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$, we have in particular that 
+        $$ \mathcal{T_R}\{(x_1,\cdots,x_n)\} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
+        which means that there is a natural transformation 
+        \begin{align*}
+         \alpha:& [t(x_1,\cdots,x_n)] \Rightarrow [t'(x_1,\cdots,x_n)] : \\
+        &\mathcal{T_R}(\{x1,\cdots,x_n\})^n \rightarrow \mathcal{T_R}(\{(x_1,\cdots,x_n)\}).
+        \end{align*}
+        When we instantiate $\alpha$ with objects $[x_1],\cdots,[x_n]$ we obtain the equivalence class  
+        of proof terms 
+        $$\alpha([x_1,\cdots, x_n]): [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)].
+        $$
+        Therefore,the sequent is provable from $\mathcal{R}$, as desired.
+    \end{block}
+\end{frame}
 \section{Maude}
 \begin{frame}
     \frametitle{What is Maude}
@@ -846,18 +906,10 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
             \item LTL and LTLR model checking 
         \end{itemize}
         \pause 
+        
         \item Unification 
         \item SMT solver
     \end{itemize}
-\end{frame}
-\begin{frame}
-    \frametitle{Soundness and completness}
-
-    \begin{block}{Satisfaction}
-        A sequent 
-    \end{block}
-    
-
 \end{frame}
 \begin{frame}{Outline}
     \tableofcontents[currentsection, currentsubsection,hideothersubsections]
