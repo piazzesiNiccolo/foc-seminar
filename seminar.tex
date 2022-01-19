@@ -165,7 +165,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     $$
     
 
-    If all the rules are unconditional , we have an \emph{unconditional rewrite theory}
+    If all the rules are unconditional , we have an \emph{unconditional rewrite theory.}
 \end{frame}
 \begin{frame}
 
@@ -203,9 +203,9 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \frametitle{Rules of deduction}
     \scriptsize
     \begin{enumerate}
-        \item \emph{Relfexivity}. For each $[t] \in T_{\Sigma,E}(\mathbf{X})$, 
+        \item \emph{Reflexivity}. For each $[t] \in T_{\Sigma,E}(\mathbf{X})$, 
             $$
-            \infer[]{[t] \rightarrow [t']}{}
+            \infer[]{[t] \rightarrow [t]}{}
             $$
         \item \emph{Congruence}. For each $f \in \Sigma_n, n \in \mathbb{N}$,
             $$
@@ -282,9 +282,9 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
         of rules (1) and (2).
         \pause
         \item a \emph{one-step concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$
-        by finite applications of rules (1)-(3), with at least one application of (3).
+        by finite application of rules (1)-(3), with at least one application of (3).
         \pause
-        \item a \emph{concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite applications of rules (1)-(4).
+        \item a \emph{concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite application   of rules (1)-(4).
     \end{itemize}
 \end{frame}
 \begin{frame}
@@ -386,7 +386,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
         $$
         \infer[]
         {f(\alpha_1, \cdots, \alpha_n): [f(t_1, \cdots, t_n)] \rightarrow [f(t_1', \cdots, t_n')]}
-        {\alpha_1: [t_1]}
+        {\alpha_1: [t_1] \rightarrow [t_1'] \quad \cdots \quad \alpha_n:[t_n] \rightarrow [t_n']}
         $$
 
         \item \emph{Replacement.} For each rewrite rule 
@@ -404,7 +404,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
                     \AxiomC{$\alpha_n : [w_n] \rightarrow [w_n']$}
                     \UnaryInfC{$\beta_k : [u_k(\overline{w}/ \overline{x})] \rightarrow [v_k(\overline{w}/ \overline{x})]$}
                 \alwaysSingleLine
-                \TrinaryInfC{$r(\overline{\alpha}^n,\overline{\beta}^k)[t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w}'/ \overline{x})]$}
+                \TrinaryInfC{$r(\overline{\alpha}^n,\overline{\beta}^k) : [t(\overline{w}/ \overline{x})] \rightarrow [t'(\overline{w}'/ \overline{x})]$}
         \end{prooftree}
 
         \item \emph{Composition}
@@ -482,7 +482,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \end{align*}
     we define an operation 
     \begin{align*}
-        r(\_,_) : \{(\overline{\alpha}^n,\overline{\beta}^k) \in \mathcal{P_R}(X&)^{n+k} 
+        r(\_,\_) : \{(\overline{\alpha}^n,\overline{\beta}^k) \in \mathcal{P_R}(X&)^{n+k} 
         | \partial_0^k(\overline{\beta}^k) = \overline{[u(\partial_0^n(\overline{\alpha}^n)\overline{x})]}^k \\
         &\wedge  \partial_1^k(\overline{\beta}^k) = \overline{[v(\partial_0^n(\overline{\alpha}^n)\overline{x})]}^k\} \rightarrow \mathcal{P_R}(X)
     \end{align*}
@@ -545,17 +545,17 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
             
             $\alpha;[t'] = \alpha,\quad [t];\alpha=\alpha.$
         \end{enumerate}
-        \item \emph{Functioriality.}. For each $f \in \Sigma_n, n \in \mathbb{N}$,
+        \item \emph{Functoriality.}. For each $f \in \Sigma_n, n \in \mathbb{N}$,
         \begin{enumerate}[a]
             \scriptsize
             \item Preservation of composition. For all $\alpha_1,\cdots,\alpha_n,\beta_1,\cdots,\beta_n$,
             
             $f(\alpha_1;\beta_1,\cdots,\alpha_n;\beta_n) = f(\alpha_1,\cdots,\alpha_n);f(\beta_1,\cdots,\beta_n). $
-            \item Preservation of Identities.
+            \item Preservation of identities.
             
             $ f([t_1],\cdots,[t_n])=[f(t_1,\cdots,t_n)].$
         \end{enumerate}
-        \item \emph{Axioms} in $E$. For $t(x_1,\cdots,x_n)=t'(x_1,x_n)$ an axiom in $E$, for all $\alpha_1,\cdots,\alpha_n$,
+        \item \emph{Axioms} in $E$. For $t(x_1,\cdots,x_n)=t'(x_1,\cdots,x_n)$ an axiom in $E$, for all $\alpha_1,\cdots,\alpha_n$,
         
         $ t(\alpha_1,\cdots,\alpha_n)=t'(\alpha_1,\cdots,\alpha_n).$
 
@@ -613,15 +613,11 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
         $ \alpha;\alpha^{-1} = [t],\quad \alpha^{-1};\alpha= [t'].$
     \end{enumerate}
     \pause
-    \begin{block}{Lemma}
-        For each $ r:[t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$ in $R$, the \emph{family of morphisms}
-        $$ \{r(\overline{[w]}): [t(\overline{w}/\overline{x})] \rightarrow [t'(\overline{w}/\overline{x})] | \overline{[w]} \in T_{\Sigma,E}(X)^n\}$$
-        is a natural transformation
-        $$ r:[t(x_1,\cdots,x_n)] \Rightarrow [t'(x_1,\cdots,x_n)]$$
-        between the functors 
-        $$[t(x_1,\cdots,x_n)],[t'(x_1,\cdots,x_n)]: \mathcal{T_R}(X)^n \rightarrow \mathcal{T_R}(X).$$
-
-    \end{block}
+    The exchange law makes $r$ a natural transformation.
+    \begin{figure}
+        
+        \includegraphics[width=\textwidth, height=\textheight,keepaspectratio]{img/nattr.png}
+    \end{figure}
 \end{frame}
 \begin{frame}
     We can now make precise the mathematical meaning of the \emph{exchange} law.
@@ -876,7 +872,7 @@ Proof is by induction on the depth of proof terms.
         which means that there is a natural transformation 
         \begin{align*}
          \alpha:& [t(x_1,\cdots,x_n)] \Rightarrow [t'(x_1,\cdots,x_n)] : \\
-        &\mathcal{T_R}(\{x1,\cdots,x_n\})^n \rightarrow \mathcal{T_R}(\{(x_1,\cdots,x_n)\}).
+        &\mathcal{T_R}(\{x_1,\cdots,x_n\})^n \rightarrow \mathcal{T_R}(\{(x_1,\cdots,x_n)\}).
         \end{align*}
         When we instantiate $\alpha$ with objects $[x_1],\cdots,[x_n]$ we obtain the equivalence class  
         of proof terms 
