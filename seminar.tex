@@ -104,7 +104,7 @@
     \pause
     \begin{block}{Logical side}
         Rewriting logic  is also a \emph{logical framework}, a model within which 
-        many other logics and deduction procedures  can be modeled and reasoned about.        
+        many other logics and deduction procedures  can be modelled and reasoned about.        
     \end{block}
 \end{frame}
 \section{Foundations}
@@ -260,7 +260,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \emph{Equational logic} can be obtained  from rewriting logic by adding the following rule:
     \begin{enumerate}
         \setcounter{enumi}{6}
-        \item \emph{Simmetry}
+        \item \emph{Symmetry}
         $$
         \infer[]{[t_2] \rightarrow [t_1]}{[t_1] \rightarrow [t_2]} 
         $$
@@ -415,7 +415,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
 \end{frame}
 \begin{frame}
     For equational logic we can define a similar category $\mathcal{T_R}^{\leftrightarrow}(X)$ ( a \emph{groupoid}) by using 
-    the rule of simmetry to generate additional terms:
+    the rule of symmetry to generate additional terms:
     
     \bigskip 
     {
@@ -463,7 +463,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \pause
 
     By rule (2), $\mathcal{P_R}(X)$ has a $\Sigma$-algebra structure where $\partial_0,\partial_1$ are 
-    $\Sigma$-omomorphisms.
+    $\Sigma$-homomorphisms.
 
     \bigskip
     \pause
@@ -492,7 +492,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \begin{block}{R-presystem}
         Given a rewrite theory $\mathcal{R} = (\Sigma, E, L, R)$, an $\mathcal{R}-presystem$
         is a reflexive graph $G$ together with: \begin{enumerate}
-            \item a $\Sigma$-algebra structure onn $G$ such that the $\Sigma$-algebra Nodes of nodes
+            \item a $\Sigma$-algebra structure on $G$ such that the $\Sigma$-algebra Nodes of nodes
             satisfies the equation in $E$;
             \item an operation 
             $$ \_;\_ : Composable(G) \rightarrow Arrows$$
@@ -516,7 +516,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \small
     \begin{block}{$\mathcal{R}$-prehomomorphism}
         Given two $\mathcal{R}$-presystems G and G', an $\mathcal{R}$-prehomomorphism is a 
-        graph omomorphism that preserves all the operations in $\Sigma$, the operation $\_;\_$ and the operation $r(\_,\_)$ for $r \in R$.
+        graph homomorphism that preserves all the operations in $\Sigma$, the operation $\_;\_$ and the operation $r(\_,\_)$ for $r \in R$.
         With this, we can define the category $\underline{\mathcal{R}\text{-PreSys}}$.
     \end{block}
     
@@ -734,7 +734,7 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
     An $\mathcal{R}-omomorphism\ F: \mathcal{S} \rightarrow \mathcal{S}'$ between two $\mathcal{R}$-systems is a 
     functor $F:\mathcal{S} \rightarrow S'$ such that:
     \begin{itemize}
-        \item it is a $\Sigma$-algebra omomorphism,i.e, $f_\mathcal{S}*F = F^n*f_{\mathcal{S}'}$ for each $f \in \Sigma_n$
+        \item it is a $\Sigma$-algebra homomorphism,i.e, $f_\mathcal{S}*F = F^n*f_{\mathcal{S}'}$ for each $f \in \Sigma_n$
         \item for each rewrite rule $r:[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if\ C$ in r we have: 
         $$ r_\mathcal{S} * F = F^\bullet * r_{\mathcal{S}'} $$
     \end{itemize}
@@ -802,7 +802,7 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
 
         \medskip
         Given an $\mathcal{R}$-system $\mathcal{S}$, each function $F:X \rightarrow Obj(S)$ extends uniquely 
-        to an $\mathcal{R}$-omomorphism $F^\sharp: \mathcal{T_R}(X) \rightarrow \mathcal{S}$.
+        to an $\mathcal{R}$-homomorphism $F^\sharp: \mathcal{T_R}(X) \rightarrow \mathcal{S}$.
     \end{block}
     \pause
     \begin{block}{Proof}
@@ -822,7 +822,7 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
     \end{block}
 \end{frame}
 \begin{frame}
-    \frametitle{Soundness and completness}
+    \frametitle{Soundness and completeness}
     \scriptsize
     \begin{block}{Satisfaction}
         A sequent $[t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$ is \emph{satisfied} by 
@@ -855,7 +855,7 @@ Proof is by induction on the depth of proof terms.
 \end{frame}
 \begin{frame}
     \scriptsize
-    \begin{block}{Completness}
+    \begin{block}{Completeness}
         For $\mathcal{R}$ a rewrite theory,
         $$ \mathcal{R} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]
         $$
@@ -887,7 +887,7 @@ Proof is by induction on the depth of proof terms.
     \textbf{Maude}
     \begin{itemize}
         \pause
-        \item Declarative programming languaged based on rewriting logic 
+        \item Declarative programming language based on rewriting logic 
         \begin{itemize}
             \item Built by SRI international and University of Illinois
             \item Includes membership equational logic as a sublanguage based on OBJ3 
@@ -1069,7 +1069,7 @@ result Bool: true
 \end{frame}
 \begin{frame}
     \frametitle{The meta level }
-    Maude exploits the reflective nature of rewriting logic. Every maude \emph{module} \textbf{$M$} can be represented  as 
+    Maude exploits the reflective nature of rewriting logic. Every Maude \emph{module} \textbf{$M$} can be represented  as 
     a \emph{term} \textbf{$\overline{M}$} of \emph{Sort} \textbf{Module}. 
 
     \bigskip
