@@ -884,6 +884,7 @@ result Bool: true
 \begin{frame}
     \begin{itemize}
         \item Data divided into \textbf{entity groups} 
+        \item A single entity group is replicated across multiple \textbf{\emph{sites.}}
         \item \textbf{Replicated transaction log}  for each group
         \item Two phase commits with a paxos-based protocol 
     \end{itemize}
@@ -900,7 +901,7 @@ result Bool: true
 \end{frame}
 \begin{frame}
     \frametitle{MegaStore CGC}
-
+    \small
     Work by  Grov and $\ddot{\text{O}}$lveczky:
     \begin{itemize}
         \item Formalized Google MegaStore in Real-Time Maude
@@ -912,32 +913,21 @@ result Bool: true
         accessing multiple entity groups 
     \end{itemize} 
     
+    \bigskip
+    \begin{center}
+    \textbf{Formal test driven development}
+        \begin{enumerate}
+            \item Express requirements as LTL formulas
+            \item Develop Real Time Maude model 
+            \item Test model through simulation and model checking 
+            \item Analyse failures and modify the model
+        \end{enumerate}
+    \end{center}
 \end{frame}
-\begin{frame}
-    \frametitle{Main ideas}
+\begin{frame}[fragile]   
 
-    \begin{itemize}
-        \item A site participates in all updates involving the entity groups it replicates 
-            \begin{itemize}
-                \item Implicit ordering on these updates
-                \item \textbf{Idea}: make the order \emph{explicit}
-                \item Validate transactions on multiple entity groups before commit 
-            \end{itemize}
-            
-        \bigskip
-        \pause
-        \item Formal test driven development 
-            \begin{enumerate}
-                \item Express requirements as LTL formulas
-                \item Develop Real Time Maude model 
-                \item Test model through simulation and model checking 
-                \item Analyse failures and modify the model
-            \end{enumerate}
-    \end{itemize}
-\end{frame}
-\begin{frame}[fragile]
-    \scriptsize
-    \frametitle{MegaStore Maude fragments}
+    \frametitle{Formalizing MegaStore} 
+    \scriptsize   
     \begin{lstlisting}[language=maude]
 class Site | entityGroups : Configuration, localTransactions : Configuration,
             coordinator : EntGroupLogPosPairSet, egOrderings : OrderClassUpdates,
@@ -953,47 +943,50 @@ class Transaction | operations : OperationList, status : TransStatus,
     \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]
+    \frametitle{A rewrite rule}
     \scriptsize
     \begin{lstlisting}[language=maude]
-crl [initiateCommit] :
-    < SID' : Site |
-    entityGroups EGROUPS,
-    localTransactions : LOCALTRANS
-    < TID : Transaction | operations : emptyOpList,
-    writes : WRITEOPS, status : idle
-    readState : RSTATE, paxosState : PSTATE > >
-    =>
-    < SID : Site |
-    localTransactions : LOCALTRANS
-    < TID : Transaction | paxosState : NEW-PAXOS-STATE,
-    status : in-paxos > >
-    ACC-LEADER-REQ-MSGS
-if EIDSET := getEntityGroupIds(WRITEOPS) /\
-    NEW-PAXOS-STATE := initiatePaxosState(EIDSET, TID, WRITEOPS,
-    SID, RSTATE, EGROUPS)
-/\ (createAcceptLeaderMessages(SID, NEW-PAXOS-STATE)) => ACC-LEADER-REQ-MSGS
-    \end{lstlisting}
+    crl [initiateCommit] :
+        < SID' : Site |
+            entityGroups EGROUPS,
+            localTransactions : LOCALTRANS
+                < TID : Transaction | operations : emptyOpList,
+                                    writes : WRITEOPS, status : idle
+                                    readState : RSTATE, paxosState : PSTATE > >
+        =>
+        < SID : Site |
+            localTransactions : LOCALTRANS
+                < TID : Transaction | paxosState : NEW-PAXOS-STATE,
+                                    status : in-paxos > >
+        ACC-LEADER-REQ-MSGS
+    if EIDSET := getEntityGroupIds(WRITEOPS) /\
+        NEW-PAXOS-STATE := initiatePaxosState(EIDSET, TID, WRITEOPS,
+        SID, RSTATE, EGROUPS)
+    /\ (createAcceptLeaderMessages(SID, NEW-PAXOS-STATE)) => ACC-LEADER-REQ-MSGS
+        \end{lstlisting}
+\end{frame}
+\begin{frame}
+\frametitle{Megastore-CGC}
 
+    Observation:
+    \begin{itemize}
+        \item A site participates in all updates involving the entity groups it replicates 
+        \item Implicit local ordering on these updates
+    \end{itemize}  
+            
+    Idea:
+    \begin{itemize}
+        \item Select one site and make the ordering \textbf{explicit.}
+        \item Site validates transactions on multiple entity groups before commit.
+    \end{itemize}
+
+    \emph{Ordering class} $\Rightarrow$ set of entity groups.
+
+    \textbf{Ordering site} for each ordering class.
 \end{frame}
-\begin{frame}[fragile]
-    \scriptsize 
-    \begin{lstlisting}[language=maude]
-crl [rcvAcceptAllReq] :
-(msg acceptAllReq(TID, EG, (TID' LP SID OL), PROPNUM) from SENDER to THIS)
-    < THIS : Site |
-    entityGroups : EGROUPS
-    < EG : EntityGroup | proposals : PROPSET, transactionLog : LEL > >
-  =>
-    < THIS : Site |
-    entityGroups : EGROUPS
-    < EG : EntityGroup |
-    proposals : accepted(SENDER, (TID' LP SID OL), PROPNUM) ;
-    removeProposal(LP, PROPSET) > >
-    dly(acceptAllRsp(TID, EG, LP, PROPNUM) from THIS to SENDER), T)
-if not (containsLPos(LP, LEL) or hasAcceptedForPosition(LP, PROPSET))
-/\ T ; TS := possibleMessageDelay(THIS, SENDER) .       
-    \end{lstlisting}
-\end{frame}
+
+
+
 \begin{frame}[fragile]
     \frametitle{LTL requirements}
     Desired Property: 
@@ -1017,6 +1010,32 @@ if not (containsLPos(LP, LEL) or hasAcceptedForPosition(LP, PROPSET))
     
     eq {SYSTEM} |= entityGroupsEqualOrInvalid = true [owise] .
     \end{lstlisting}
+\end{frame}
+\begin{frame}
+    \frametitle{Performance}
+    Performance estimation done through Maude simulation, comparing MegaStore performance with Megastore-CGC.
+    \begin{center}
+        \textbf{(tfrew initState(10) in time <= 1000000 .)}
+    \end{center}
+
+    Result:
+    \begin{center}
+    \textbf{\{< stats(RSite): SiteStatistics | avgLatency : 94579/631, commitCount : 631,
+conflictAborts : 171, validationAborts : 10, ... > ... \}}
+    \end{center} 
+\end{frame} 
+
+\begin{frame}
+    Analyzing results,  almost no difference in performance was found between Megastore and Megastore-CGC.
+    \begin{figure}
+        \includegraphics[width=\textwidth]{img/perf1.png}
+        \end{figure}
+    
+    This is also true for "Megastore-friendly" transactions, those accessing 
+    only one entity group.
+    \begin{figure}
+        \includegraphics[width=\textwidth]{img/perf2.png}
+    \end{figure}
 \end{frame}
 
 \begin{frame}
