@@ -503,39 +503,31 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
     Given a rewrite theory $\mathcal{R} = (\Sigma,E,L,R)$, an \emph{\textbf{$\mathcal{R}$-system $\mathcal{S}$}} is a 
     category $\mathcal{S}$ together with:
     \begin{enumerate}
-        \item a family of functors $\{\mathcal{S}_f:\mathcal{S}^n \rightarrow \mathcal{S} | f \in \Sigma_n\}$
+        \item a family of functors $\{f_\mathcal{S}:\mathcal{S}^n \rightarrow \mathcal{S} | f \in \Sigma_n\}$
+        satisfying the equations in $E$.
+        \item for each rewrite rule $r:[t(\overline{x})] \rightarrow [t'(\overline{x})]$ in $R$, a natural transformation $r_\mathcal{S}$ from 
+        $t_\mathcal{S}$ to $t'_\mathcal{S}$.
     \end{enumerate}
-\end{frame}
-\begin{frame}
-    \scriptsize
+
     An $\mathcal{R}-omomorphism\ F: \mathcal{S} \rightarrow \mathcal{S}'$ between two $\mathcal{R}$-systems is a 
     functor $F:\mathcal{S} \rightarrow S'$ such that:
     \begin{itemize}
         \item it is a $\Sigma$-algebra homomorphism,i.e, $f_\mathcal{S}*F = F^n*f_{\mathcal{S}'}$ for each $f \in \Sigma_n$
         \item for each rewrite rule $r:[t(\overline{x})] \rightarrow [t'(\overline{x})]\ if\ C$ in r we have: 
-        $$ r_\mathcal{S} * F = F^\bullet * r_{\mathcal{S}'} $$
+        $$ r_\mathcal{S} * F = F^n * r_{\mathcal{S}'} $$
     \end{itemize}
-    $F^\bullet:Subeq(C_\mathcal{S}) \rightarrow Subeq(C_{\mathcal{S}'})$ has  a complex definition based on the universal property of subequalizers 
-    but its behaviour on object is straightforward: 
-    $$F^\bullet(\overline{C}^n,\overline{c}^k) = (F^n(\overline{C}^n),F^k(\overline{c}^k)). $$
 
- 
-    \pause 
-    Thanks to the last definition, we can define the category $\underline{\mathcal{R}\text{-Sys}}$. 
+    \pause
+    \bigskip
+    $\underline{\mathcal{R}\text{-Sys}}$: category of models for the rewrite theory $\mathcal{R}$. 
+    
+    \medskip
+    The homsets $\mathcal{R}\text{-Sys}(\mathcal{S},\mathcal{S'})$ are also categories.  
+    The arrows are given by natural transformation $\delta:F \rightarrow G$ between $\mathcal{R}$-homomorphisms $F,G$ satisfying the identity 
+    $\delta^n*f_{\mathcal{S}'}=f_\mathcal{S}*\delta$. 
 
     \medskip
-    \pause
-    \textbf{Additional property}: the homsets $\underline{\mathcal{R}\text{-Sys}}(\mathcal{S},\mathcal{S}')$ are 
-    category themselves, with morphisms called \emph{modifications}.
-
-    Modifications are given by natural transformations $\delta: F \rightarrow G$ between $\mathcal{R}$-homomorphisms 
-    $F,G:\mathcal{S} \rightarrow \mathcal{S}'$ satisfying the identities
-    $$\delta^n * f_{\mathcal{S}'} =  f_\mathcal{S} * \delta$$
-    for each $f \in \Sigma_n$. 
-
-    \medskip
-    \pause
-    This additional structure means that $\underline{\mathcal{R}\text{-Sys}}$ is actually a 2-category.
+    This makes $\underline{\mathcal{R}\text{-Sys}}$ a 2-category.
 \end{frame}
 \begin{frame}
     \frametitle{Computational view of $\mathcal{R}$-systems}
@@ -549,54 +541,15 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
     \end{align*}
 \end{frame}
 \begin{frame}
-    \small 
+    \large
     \frametitle{Initial and free $\mathcal{R}$-systems}
-    \begin{block}{Lemma}
-        The full subcategory of $\underline{\mathcal{R}\text{-PreSys}}$ determined  
-        by the presystems satisfying equations (1)-(5) is isomorphic to $\underline{\mathcal{R}\text{-Sys}}$.
-    \end{block}
+   
+    $$\mathcal{T_R} =\ Initial\ Object\ in\ \underline{\mathcal{R}\text{-Sys}} $$ 
+
 
     \bigskip
-    It's known that when we have a full subcategory defined by a collection of equations, that subcategory  is 
-    \emph{reflective} inside the bigger one. 
+    $$\mathcal{T_R}(X) =\ Free\ Object\ in\ \underline{\mathcal{R}\text{-Sys}} $$ 
     
-    In our case, this means that the full subcategory inclusion 
-    $$ \underline{\mathcal{R}\text{-Sys}} \hookrightarrow \underline{\mathcal{R}\text{-PreSys}}$$
-    has a left adjoint.
-
-    \bigskip
-    \pause
-    For presystems $\mathcal{P_R}(X)$, the quotient $\mathcal{R}$-prehomomorphism 
-    $$Q_X:\mathcal{P_R}(X) \rightarrow \mathcal{T_R}(X)$$
-    is the \emph{reflection map (unit)} of the adjunction.
-
-\end{frame}
-\begin{frame}
-    \scriptsize
-    \begin{block}{Initiality}
-        The $\mathcal{R}$-system $\mathcal{T_R}$ is an initial object in the category 
-        $\underline{\mathcal{R}\text{-Sys}}$. More generally, the system $\mathcal{T_R}(X)$ has the following universal property:
-
-        \medskip
-        Given an $\mathcal{R}$-system $\mathcal{S}$, each function $F:X \rightarrow Obj(S)$ extends uniquely 
-        to an $\mathcal{R}$-homomorphism $F^\sharp: \mathcal{T_R}(X) \rightarrow \mathcal{S}$.
-    \end{block}
-    \pause
-    \begin{block}{Proof}
-        All we want to prove is that the composition functor 
-        $$ \underline{\mathcal{R}\text{-Sys}} \hookrightarrow \underline{\mathcal{R}\text{-PreSys}} \rightarrow \underline{Set}$$
-        has a left adjoint. 
-
-        \pause
-        We just discussed that the left adjoint of $ \underline{\mathcal{R}\text{-Sys}} \hookrightarrow \underline{\mathcal{R}\text{-PreSys}}$ exists and it maps 
-        $\mathcal{P_R}(X)$ to $\mathcal{T_R}(X)$.
-        
-        \pause
-        We saw before that the left adjoint of $\underline{\mathcal{R}\text{-PreSys}} \rightarrow \underline{Set}$ exists and maps $X$ to $\mathcal{P_R}(X)$.
-        
-        \pause
-        The left adjoint that we want is given by the composition of these two left adjoints.
-    \end{block}
 \end{frame}
 \begin{frame}
     \frametitle{Soundness and completeness}
