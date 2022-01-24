@@ -870,12 +870,36 @@ result Bool: true
 
     http://maude.cs.illinois.edu/w/index.php/Applications
 \end{frame}
+\subsection{Megastore-CGC}
+\begin{frame}{Outline}
+    \tableofcontents[currentsection, currentsubsection,hideothersubsections]
+\end{frame}
+\begin{frame}
+    \frametitle{Data in the cloud}
+\begin{figure}
+    \includegraphics[width=.7\textwidth]{img/cap.png}
+\end{figure}
+\end{frame}
+\begin{frame}
+    \textbf{Availability AND Scalability} $\Rightarrow$ must replicate data
+
+    How can i keep replicated data consistent?
+    
+    \bigskip
+    Usual approach: \textcolor{red}{"Eventual consistency"}
+
+    \bigskip
+    Not ok for all applications (banking, commerce, medical systems,...)
+
+    \bigskip
+    Classical database transactions not well supported  in cloud computing, too expensive.
+\end{frame}
 \begin{frame}
     \frametitle{Google Megastore}
     \begin{itemize}
-        \item Google's replicated data store 
-        \item Billions  of read/write daily transactions 
-        \item Adds (limited) support for transactions  in distributed data stores   
+        \item Google's replicated data store.
+        \item Billions  of read/write daily transactions.
+        \item Adds (limited) support for transactions  in distributed data stores.   
     \end{itemize}
     \begin{figure}
         \includegraphics[width=\textwidth]{img/megastore.png}
@@ -883,34 +907,46 @@ result Bool: true
 \end{frame}
 \begin{frame}
     \begin{itemize}
-        \item Data divided into \textbf{entity groups} 
-        \item A single entity group is replicated across multiple \textbf{\emph{sites.}}
-        \item \textbf{Replicated transaction log}  for each group
-        \item Two phase commits with a paxos-based protocol 
+        \item Data divided into \textbf{entity groups.} 
+        \item A single entity group is replicated across multiple \textbf{\emph{sites}}, managed by a \emph{\textbf{coordinator.}}
+        \item \textbf{Replicated transaction log}  for each group.
+        \item Two phase commits with a paxos-based protocol.
+        \item Sites agree on next log entry if concurrent update.
     \end{itemize}
     \begin{figure}
-        \includegraphics[scale=0.2]{img/paxos.png}
+        \includegraphics[width=\textwidth, height=.6\textheight,keepaspectratio]{img/paxos.png}
     \end{figure}
 \end{frame}
 \begin{frame}
-    \frametitle{Issues}
+    
+    \large
+    Megastore  guarantees consistency for transactions accessing a \textbf{single} entity group.
+
+    \bigskip
+    \textbf{Issues:}
     \begin{itemize}
-        \item Original overview definition very informal, \textbf{really complex system}
-        \item No consistency guarantee if a transaction reads multiple entity groups
+        \item Original overview definition very informal, \textbf{really complex system}.
+        \item No consistency guarantee if a transaction reads multiple entity groups.
+        \begin{itemize}
+            \item If you need consistency you could put all your data in a single entity group. 
+            \item This could significantly worsen performance, concurrent updates works better 
+            if the entity groups managed are smaller.
+        \end{itemize}
     \end{itemize}
+    
 \end{frame}
 \begin{frame}
     \frametitle{MegaStore CGC}
     \small
     Work by  Grov and $\ddot{\text{O}}$lveczky:
     \begin{itemize}
-        \item Formalized Google MegaStore in Real-Time Maude
+        \item Formalized Google MegaStore in Real-Time Maude.
         \begin{itemize}
-            \item 56 rewrite rules 
-            \item Use  of simulation and model checking to discover bugs during development
+            \item 56 rewrite rules (37 for fault tolerance).
+            \item Use  of simulation and model checking to discover bugs during development.
         \end{itemize} 
         \item Introduced MegaStore CGC, an extension that provides consistency for transactions 
-        accessing multiple entity groups 
+        accessing multiple entity groups. 
     \end{itemize} 
     
     \bigskip
@@ -966,6 +1002,18 @@ class Transaction | operations : OperationList, status : TransStatus,
         \end{lstlisting}
 \end{frame}
 \begin{frame}
+    \scriptsize
+    Performance was evalutated using Real Time Maude randomized simulations, which provides good performance estimates.
+
+    
+    \bigskip
+    Simulation starts from realistic initial states and keep tracks of measures such as 
+    average latency, number of commits, aborts, frequency of requests etc...
+    \begin{figure}
+        \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/init.png}
+    \end{figure}
+\end{frame}
+\begin{frame}
 \frametitle{Megastore-CGC}
 
     Observation:
@@ -985,17 +1033,33 @@ class Transaction | operations : OperationList, status : TransStatus,
     \textbf{Ordering site} for each ordering class.
 \end{frame}
 
+\begin{frame}
+    Megastore-CGC piggybacks its ordering and validation in the normal Megastore protocol.
+    
 
+
+    \bigskip
+    Failure handling both for message loss AND ordering site failure.
+
+    \bigskip
+    No additional messages, mantains Megastore performance and fault tolerance. 
+
+    \begin{figure}
+        \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/validate.png}
+    \end{figure}
+\end{frame}
 
 \begin{frame}[fragile]
     \frametitle{LTL requirements}
+    System behaviour verification done via LTL model checking.
+    
+    \bigskip
     Desired Property: 
     \begin{lstlisting}[language=maude, basicstyle=\scriptsize]
     <> [] (allTransFinished /\ entityGroupsEqualOrInvalid
     /\ transLogsEqualOrInvalid /\ isSerializable)
     \end{lstlisting}
 
-    \pause
     All replicas are equal Property:
     \begin{lstlisting}[language=maude, basicstyle=\scriptsize]
     op entityGroupsEqualOrInvalid : -> Prop [ctor] .
