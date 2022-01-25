@@ -129,13 +129,13 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     
     \bigskip
     \begin{itemize}
-        \pause
+
         \item $\Sigma$: ranked alphabet of function symbols
-        \pause
+        
         \item E: set  of $\Sigma$-equations 
-        \pause
+       
         \item L: set of \emph{labels}
-        \pause
+      
         \item R: set of pairs $R \subseteq L \times (T_{\Sigma, E}(\mathbf{X})^2)^+$
     \end{itemize}
     
@@ -146,27 +146,7 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \medskip
     Elements of R are called \emph{rewrite rules}.
 \end{frame}
-\begin{frame}
-    \frametitle{Rewriting rules}
-    A rewrite rule 
-    \begin{center}
-        $(r,([t],[t'])([u_1],[v_1])\cdots([u_k],[v_k]))$
-    \end{center}
-    is written as 
-    $$
-    r:[t] \rightarrow [t']\ if\ \underbrace{[u_1]\rightarrow[v_1] \wedge \cdots \wedge [u_k] \rightarrow [v_k] \pause}_{condition\ C}
-    $$
-    
-    \bigskip
-    \pause
-    If a condition is empty, we have an \emph{unconditional rewrite rule}.
-    $$
-    r:[t] \rightarrow [t']
-    $$
-    
 
-    If all the rules are unconditional , we have an \emph{unconditional rewrite theory.}
-\end{frame}
 \begin{frame}
 
     An example: natural numbers with a nondeterministic choice operator 
@@ -241,36 +221,6 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     \end{enumerate}
 \end{frame}
 \begin{frame}
-    \frametitle{Additional rules}
-    \scriptsize
-    \begin{enumerate}
-        \setcounter{enumi}{5}
-        \item \emph{Substitution}
-        $$
-        \infer[]
-        {[t(w_1)/x_{i_1},\cdots,w_n/x_{i_n}] \rightarrow [t'(w_1')/x_{i_1},\cdots,w_n'/x_{i_n}]}
-        {[t(x_{i_1},\cdots,x_{i_n})] \rightarrow [t'(x_{i_1},\cdots,x_{i_n})] \quad [w_1] \rightarrow [w_1'] \cdots [w_n] \rightarrow [w_n']} 
-        $$
-    \end{enumerate}
-    
-    Any sequent derivable by adding (6) to  (1)-(4) can be derived by using only (1)-(4).
-
-    \pause 
-    \bigskip
-    \emph{Equational logic} can be obtained  from rewriting logic by adding the following rule:
-    \begin{enumerate}
-        \setcounter{enumi}{6}
-        \item \emph{Symmetry}
-        $$
-        \infer[]{[t_2] \rightarrow [t_1]}{[t_1] \rightarrow [t_2]} 
-        $$
-    \end{enumerate}
-    \pause 
-    
-    \bigskip 
-    We can now give the definition of \emph{concurrent rewriting}.
-\end{frame}
-\begin{frame}
     \frametitle{Concurrent rewriting}
     $\mathcal{R} = (\Sigma, E, L, R)$
     \small
@@ -290,48 +240,45 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
 \begin{frame}
     $\mathcal{R} = (\Sigma, E, L, R)$
     \small
-    \begin{block}{Lemma}
-        For each concurrent $\mathcal{R}$-rewrite $[t] \rightarrow [t']$
-        either $[t] = [t']$ or there is a $n  \in \mathbb{N} $ and a chain  of one step (concurrent) rewrites 
-        $$
-        \underbrace{[t] \rightarrow [t_1] \rightarrow \cdots \rightarrow [t_n] \rightarrow [t'] \onslide<2->}_{step\ seqeunce}
-        $$ 
-    \end{block}
-
-    \onslide<3->{
+   
     \medskip
     $\mathcal{R}$ is \emph{terminating} if there is no infinite chain of one step rewrites.
 
     \medskip
     $[t']$ is an $\mathcal{R}-normal\ form$ of $[t]$ if $[t] \rightarrow [t']$ is an 
     $\mathcal{R}$-rewrite and there is no $[t'] \rightarrow [t'']$ one-step  $\mathcal{R}$-rewrite.
-    }
+    
 
-    \onslide<4->{
     
     \medskip
     $\mathcal{R}$ is \emph{Church-Rosser} or \emph{confluent} if
     \begin{figure}
         \includegraphics[scale=0.2]{img/churchrosser.png}
     \end{figure}
-    }
+    
 \end{frame}
 \begin{frame}
     \frametitle{Reflection}
 
     Rewriting logic is \textbf{reflective}.
 
-    \pause 
+    
     \bigskip 
     There is a finitely presented rewrite theory $\mathbf{U}$ such that, for 
         any finitely presented rewrite theory $\mathbf{T}$ (including $\mathbf{U}$ itself) we have 
         the following equivalence:
-        $$
-        T \vdash [t] \rightarrow [t'] \Longleftrightarrow U \vdash  \langle \overline{T},\overline{[t]} \rangle  \rightarrow \langle \overline{T},\overline{[t']} \rangle
+       {\small $$
+        T \vdash [t] \rightarrow [t'] \Longleftrightarrow \mathbf{U} \vdash  \langle \overline{T},\overline{[t]} \rangle  \rightarrow \langle \overline{T},\overline{[t']} \rangle
         $$ 
-
-    \pause 
-    This property is fundamental for the applications of RL, as we will see in Maude.
+       }
+        \bigskip
+    Since $\mathbf{U}$ is representable in itself, we can create a "reflective tower" with any 
+    number of levels of reflection:
+    {\scriptsize
+    $$T \vdash [t] \rightarrow [t'] \Leftrightarrow \mathbf{U} \vdash  \langle \overline{T},\overline{[t]} \rangle  \rightarrow \langle \overline{T},\overline{[t']} \rangle
+    \Leftrightarrow\mathbf{U} \vdash  \langle \overline{\mathbf{U}},\overline{\langle \overline{T},\overline{[t]} \rangle} \rangle  \rightarrow  
+    \langle \overline{\mathbf{U}},\overline{\langle \overline{T},\overline{[t']} \rangle} \rangle \cdots $$
+    }
 \end{frame}
 \section{Semantic model}
 \begin{frame}
@@ -613,6 +560,9 @@ Proof is by induction on the depth of proof terms.
 \end{frame}
 \section{Maude}
 \begin{frame}
+    
+\end{frame}
+\begin{frame}
     \frametitle{What is Maude}
     \textbf{Maude}
     \begin{itemize}
@@ -797,20 +747,39 @@ result Bool: true
 )***
     \end{lstlisting}
 \end{frame}
-\begin{frame}
+\begin{frame}[fragile]
+    \scriptsize
     \frametitle{The meta level }
-    Maude exploits the reflective nature of rewriting logic. Every Maude \emph{module} \textbf{$M$} can be represented  as 
+    Maude exploits the reflective nature of rewriting logic. 
+    
+    \bigskip
+    Every Maude \emph{module} \textbf{$M$} can be represented  as 
     a \emph{term} \textbf{$\overline{M}$} of \emph{Sort} \textbf{Module}. 
 
-    \bigskip
-    \pause 
-    Fundamental for developing tools in Maude. \emph{Full Maude}, Real Time Maude and all the 
-    other extensions make use of this property.
-    
-    \pause
-    \bigskip 
-    Maude efficiently implements the universal theory $\mathcal{U}$ in the META-* modules.
+    \begin{align*}
+        t=f(a,g(b))& \quad  \text{module FOO}\\
+            &\Downarrow \\ 
+        \overline{t}='f[\{'a\}\text{Fo}&\text{o},'g[\{'b\}\text{Foo}]]
+    \end{align*}
 
+    \bigskip
+    The META-LEVEL module efficienlty supports reflection, providing a number of functions to 
+    perform metalevel computation in the universal theory 
+    \begin{lstlisting}[language=maude]
+op meta-apply : Module Term Qid Substitution MachineInt -> ResultPair .
+op metaReduce : Module Term ~> ResultPair [special (...)] .
+op metaRewrite : Module Term Bound ~> ResultPair [special (...)] .
+op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .    
+\end{lstlisting}
+
+
+\end{frame}
+\begin{frame}[fragile]
+    \scriptsize
+    \frametitle{A meta example}
+    \begin{figure}
+        \includegraphics[width=\textwidth,height=.8\textheight, keepaspectratio]{img/meta.png}
+    \end{figure}
 \end{frame}
 \begin{frame}[fragile]
     \scriptsize
