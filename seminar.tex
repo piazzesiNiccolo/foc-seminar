@@ -93,34 +93,7 @@
     \end{block}
 \end{frame}
 
-\begin{frame}
-    
-    Rewriting logic aim to resolve these issues with a two sides approach.
-    \pause
-    \begin{block}{Computational side}
-        Computationally, rewriting logic is a \emph{semantic framework} where many different 
-        models and languages can be represented and executed as \textbf{rewrite theories}. 
-    \end{block}
-    \pause
-    \begin{block}{Logical side}
-        Rewriting logic  is also a \emph{logical framework}, a model within which 
-        many other logics and deduction procedures  can be modelled and reasoned about.        
-    \end{block}
-\end{frame}
 \section{Foundations}
-\begin{frame}
-    \frametitle{A logic of action}
-    The rules of rewriting logic resemble those of equational logic, but the meaning is very different.
-
-    \begin{center}
-        \textbf{Rewriting logic is a logic to reason about \emph{change} in a concurrent system, \emph{not about equality.}}
-    \end{center}
-\pause 
-
-\bigskip 
-Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}.
-\end{frame}
-
 \begin{frame}
     \frametitle{Rewrite Theory}
     \begin{center}
@@ -147,39 +120,21 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
     Elements of R are called \emph{rewrite rules}.
 \end{frame}
 
-\begin{frame}
 
-    An example: natural numbers with a nondeterministic choice operator 
-    
-    \pause
-    \begin{itemize}
-        \item $\Sigma = \{0,s\_,\_+\_,\_?\_\}$
-        \pause
-        \item $E = \{N + M = M + N\}$
-        \pause
-        \item R = 
-            \vspace{-5mm}
-            \begin{align*}
-                &r1: N+0 \rightarrow N \\ 
-                &r2: (s\ N) + (s\ M) \rightarrow s\ s\ (N + M) \\ 
-                &r3: N ? M \rightarrow N \\ 
-                &r4: N ? M \rightarrow M 
-            \end{align*}
-    \end{itemize}
-\end{frame}
+  
+ 
 \begin{frame}
     \frametitle{Sequent entailment}
     \begin{center}
         \resizebox{3cm}{!}{$\mathcal{R} \vdash [t] \rightarrow [t']$}
     \end{center}
-
-    \pause 
+ 
     \vspace{2cm}
     A rewrite theory $\mathcal{R}$ \emph{entails} a \emph{sequent}
     $ [t] \rightarrow [t']$ \emph{iff} $[t] \rightarrow [t']$ can be obtained 
     by finite application of \emph{rules of deduction}.
 \end{frame}
-\begin{frame}[allowframebreaks]
+\begin{frame}
     \frametitle{Rules of deduction}
     \scriptsize
     \begin{enumerate}
@@ -212,34 +167,16 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
         $$
         \infer[]{[t_1] \rightarrow [t_3]}{[t_1] \rightarrow [t_2] \quad [t_2] \rightarrow [t_3]} 
         $$
-        \item \emph{Unconditional replacement}. For each 
-        $$ r: [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
-        in R, 
-        $$
-        \infer[]{[t(\overline{w} / \overline{x} )] \rightarrow [t'(\overline{w'} / \overline{x})]}{[w_1] \rightarrow [w_1'] \quad \cdots \quad [w_n] \rightarrow [w_n']}
-        $$
-    \end{enumerate}
+    \end{enumerate} 
 \end{frame}
 \begin{frame}
-    \frametitle{Concurrent rewriting}
     $\mathcal{R} = (\Sigma, E, L, R)$
     \small
     
     \pause
     \medskip
-    A $(\Sigma, E)$ sequent $[t] \rightarrow [t']$ is called:\begin{itemize}
-        \item a \emph{0-step concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite application 
-        of rules (1) and (2).
-        \pause
-        \item a \emph{one-step concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$
-        by finite application of rules (1)-(3), with at least one application of (3).
-        \pause
-        \item a \emph{concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite application   of rules (1)-(4).
-    \end{itemize}
-\end{frame}
-\begin{frame}
-    $\mathcal{R} = (\Sigma, E, L, R)$
-    \small
+    A $(\Sigma, E)$ sequent $[t] \rightarrow [t']$ is called  a \emph{concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite application   of rules (1)-(4).
+    
    
     \medskip
     $\mathcal{R}$ is \emph{terminating} if there is no infinite chain of one step rewrites.
@@ -282,27 +219,6 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
 \end{frame}
 \section{Semantic model}
 \begin{frame}
-    \begin{block}{What we have}
-    $ R = (\Sigma, E, L, R)$
-
-    \emph{Static description} of what a system can do.
-        
-    \end{block}
-    
-    \pause
-
-    \begin{block}{What we want}
-        \emph{Computational models} of the system behaviour (the \emph{meaning of the theory}).
-    \end{block}
-
-    \pause
-
-    \begin{block}{Idea}
-        Take advantage of the correspondence between  \emph{deductions} in rewriting logic 
-        and \emph{concurrent computations}.
-    \end{block}
-\end{frame}
-\begin{frame}
     \frametitle{The model }
     $
     R = (\Sigma, E, L, R)
@@ -317,9 +233,11 @@ Rewriting logic identifies \textbf{concurrent rewriting} with \textbf{deduction}
 
     \pause 
     \bigskip
-    \emph{Generator rules}: obtained from the rules of deduction (1)-(4) by decorating 
-    the sequents with appropriate proof terms.
-For simplicity we will consider the \emph{unconditional} case
+    
+    \textbf{Idea:} decorate sequents with terms representing proofs.
+
+    \bigskip
+    For simplicity we will consider the \emph{unconditional} case.
 \end{frame}
 \begin{frame}
     \frametitle{Rules of generation}
@@ -488,36 +406,28 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
     \end{align*}
 \end{frame}
 \begin{frame}
-    \large
-    \frametitle{Initial and free $\mathcal{R}$-systems}
+  
    
-    $$\mathcal{T_R} =\ Initial\ Object\ in\ \underline{\mathcal{R}\text{-Sys}} $$ 
+    $\mathcal{T_R}$ = Initial Object in $\underline{\mathcal{R}\text{-Sys}}$ 
 
 
     \bigskip
-    $$\mathcal{T_R}(X) =\ Free\ Object\ in\ \underline{\mathcal{R}\text{-Sys}} $$ 
-    
-\end{frame}
-\begin{frame}
-    \frametitle{Soundness and completeness}
-    \scriptsize
-    \begin{block}{Satisfaction}
-        A sequent $[t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$ is \emph{satisfied} by 
+    $\mathcal{T_R}(X)$ = Free Object in $\underline{\mathcal{R}\text{-Sys}}$
+
+    \bigskip
+    \textbf{Satisfaction}
+        
+    A sequent $[t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$ is \emph{satisfied} by 
         an $\mathcal{R}$-system $\mathcal{S}$ if there exists a natural transformation
         $$ \alpha: t_\mathcal{S} \Rightarrow t_\mathcal{S}'$$ 
         between the functors $t_\mathcal{S},t_\mathcal{S}':\mathcal{S}^n \rightarrow \mathcal{S}.$
 
-        $$ S \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
-    \end{block}
-\pause
+        $$ S \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)].$$
 
-For $\Theta \subseteq \underline{\mathcal{R}\text{-Sys}}$,
-$$ \Theta \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
-if the sequent is satisfied by all $\mathcal{R}$-systems in $\Theta$.
-
-\pause 
-$$ \mathcal{R} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)]$$
-if the sequent is satisfied by all $\mathcal{R}$-systems
+    \pause
+    If all $\mathcal{R}$-systems satisfy the sequent we write 
+        
+    $$ \mathcal{R} \models [t(x_1,\cdots,x_n)] \rightarrow [t'(x_1,\cdots,x_n)].$$
 \end{frame}
 \begin{frame}
 \begin{block}{Soundness}
@@ -763,7 +673,7 @@ result Bool: true
     \end{align*}
 
     \bigskip
-    The META-LEVEL module efficienlty supports reflection, providing a number of functions to 
+    The META-LEVEL module efficiently supports reflection, providing a number of functions to 
     perform metalevel computation in the universal theory 
     \begin{lstlisting}[language=maude]
 op meta-apply : Module Term Qid Substitution MachineInt -> ResultPair .
@@ -772,8 +682,13 @@ op metaRewrite : Module Term Bound ~> ResultPair [special (...)] .
 op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .    
 \end{lstlisting}
 
+Very powerful, allows a much more advanced level of \emph{metaprogramming.} 
+
+At the core 
+of Maude extensions (Full Maude, Real Time Maude,...) and tools (model checker, theorem proving,...)
 
 \end{frame}
+
 \begin{frame}[fragile]
     \scriptsize
     \frametitle{A meta example}
