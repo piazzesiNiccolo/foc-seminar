@@ -64,7 +64,7 @@
 \section{Introduction and main concepts}
 \begin{frame}
     \frametitle{What is a concurrent system?}
-    Modelling concurrent system is one of the most studied problems in Computer Science.
+    Modeling concurrent system is one of the most studied problems in Computer Science.
 
     \bigskip
     \pause
@@ -94,6 +94,34 @@
 \end{frame}
 
 \section{Foundations}
+\begin{frame}[fragile]
+    \frametitle{A first example}
+
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/lts.png}
+        \end{column}
+
+        \begin{column}{.5\textwidth}
+            \begin{lstlisting}[language=maude]
+    mod LTS is 
+        sort State .
+        ops a,b,c : State .
+        rl    p : a => b .
+        rl    q : a => b .
+        rl    r : b => b .
+        rl    r : b => b .
+        rl    v : c => a .
+        rl    w : c => a .
+        rl    t : c => b .
+        rl    u : c => c .
+    endm
+            \end{lstlisting}
+        \end{column}
+    \end{columns}
+
+A labelled transition system and its code in Maude, a language based on rewriting logic.
+\end{frame}
 \begin{frame}
     \frametitle{Rewrite Theory}
     \begin{center}
@@ -118,6 +146,7 @@
     
     \medskip
     Elements of R are called \emph{rewrite rules}.
+    $$r: [t] \rightarrow [t']\ if\ [u_1] \rightarrow [u_1] \wedge \cdots \wedge [v_n] \rightarrow [v_n]$$
 \end{frame}
 
 
@@ -217,6 +246,44 @@
     \langle \overline{\mathbf{U}},\overline{\langle \overline{T},\overline{[t']} \rangle} \rangle \cdots $$
     }
 \end{frame}
+\begin{frame}
+    \frametitle{A logic of action}
+    \small
+    \begin{columns}[t]
+        \begin{column}{.5\textwidth}
+            \textbf{Traditional view}
+
+            \bigskip
+            Rewriting $\rightarrow$ series of one-step \emph{sequential} rewrites.
+
+            \bigskip
+            \textbf{Operational} notion, 
+            
+            focus on the sequential computation itself.
+        \end{column}
+
+        \begin{column}{.5\textwidth}
+            \textbf{Rewriting logic}
+
+            \bigskip
+            Rewriting $\rightarrow$ \emph{logical deduction.}
+
+            \bigskip
+            \emph{Concurrency} implicit in the  model.
+        \end{column}
+    \end{columns}
+    
+    \pause
+    \bigskip
+    \textbf{\emph{Rewriting logic is a logic to reason about change in a concurrent system.}}
+
+    \bigskip
+
+    A term $[t]$ is a \emph{proposition}, built up using the connectives in $\Sigma$, that asserts being in a certain \emph{\textbf{state}} having a certain \emph{\textbf{structure}}.
+    \begin{center}
+    \textbf{Logic deduction} $\quad \Leftrightarrow \quad$ \textbf{Concurrent computation}
+    \end{center}
+\end{frame}
 \section{Semantic model}
 \begin{frame}
     \frametitle{The model }
@@ -291,7 +358,7 @@ $$Proof\ terms\ \Leftrightarrow\ Concurrent\ computations$$
 \end{frame}
 
 
-\begin{frame}[allowframebreaks]
+\begin{frame}
     \scriptsize
     \frametitle{$\mathcal{T_R}(X)$}
     Given a rewrite theory $\mathcal{R}$, the model $\mathcal{T_R}(X)$ is the quotient of 
@@ -374,7 +441,7 @@ $\mathcal{T_R}(X)$ is just one among many models for a rewrite theory $\mathcal{
         $t_\mathcal{S}$ to $t'_\mathcal{S}$.
     \end{enumerate}
 
-    An $\mathcal{R}-omomorphism\ F: \mathcal{S} \rightarrow \mathcal{S}'$ between two $\mathcal{R}$-systems is a 
+    An $\mathcal{R}-homomorphism\ F: \mathcal{S} \rightarrow \mathcal{S}'$ between two $\mathcal{R}$-systems is a 
     functor $F:\mathcal{S} \rightarrow S'$ such that:
     \begin{itemize}
         \item it is a $\Sigma$-algebra homomorphism,i.e, $f_\mathcal{S}*F = F^n*f_{\mathcal{S}'}$ for each $f \in \Sigma_n$
@@ -674,7 +741,7 @@ result Bool: true
 
     \bigskip
     The META-LEVEL module efficiently supports reflection, providing a number of functions to 
-    perform metalevel computation in the universal theory 
+    perform metalevel computation in the universal theory (\emph{descent functions}).
     \begin{lstlisting}[language=maude]
 op meta-apply : Module Term Qid Substitution MachineInt -> ResultPair .
 op metaReduce : Module Term ~> ResultPair [special (...)] .
@@ -682,19 +749,33 @@ op metaRewrite : Module Term Bound ~> ResultPair [special (...)] .
 op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .    
 \end{lstlisting}
 
-Very powerful, allows a much more advanced level of \emph{metaprogramming.} 
-
-At the core 
-of Maude extensions (Full Maude, Real Time Maude,...) and tools (model checker, theorem proving,...)
 
 \end{frame}
 
-\begin{frame}[fragile]
-    \scriptsize
-    \frametitle{A meta example}
-    \begin{figure}
-        \includegraphics[width=\textwidth,height=.8\textheight, keepaspectratio]{img/meta.png}
-    \end{figure}
+\begin{frame}
+    
+    \frametitle{Metaprogramming with reflection}
+    \small
+    \begin{itemize}
+        \item Strategy languages. 
+        
+        Execution strategies are internal to the language itself, one can easily program 
+        and define new strategies for a specific theory.
+        
+        \item Expressing languages and logics. 
+        
+        Maude can be used to represent many languages and logics. 
+    
+        Thanks to reflection, these representations can be \emph{reified}, allowing programmers 
+        to execute them in Maude itself. 
+        $$f:\mathbf{Module_\mathcal{L}} \rightarrow \mathbf{Module}$$
+        
+        
+        \item Extending Core Maude.
+        
+        Reflection is key for language extensions such as \textbf{Full Maude} or \textbf{Real Time Maude}.
+        
+    \end{itemize}
 \end{frame}
 \begin{frame}[fragile]
     \scriptsize
@@ -887,7 +968,7 @@ class Transaction | operations : OperationList, status : TransStatus,
 \end{frame}
 \begin{frame}
     \scriptsize
-    Performance was evalutated using Real Time Maude randomized simulations, which provides good performance estimates.
+    Performance was evaluated using Real Time Maude randomized simulations, which provides good performance estimates.
 
     
     \bigskip
@@ -926,7 +1007,7 @@ class Transaction | operations : OperationList, status : TransStatus,
     Failure handling both for message loss AND ordering site failure.
 
     \bigskip
-    No additional messages, mantains Megastore performance and fault tolerance. 
+    No additional messages, maintains Megastore performance and fault tolerance. 
 
     \begin{figure}
         \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/validate.png}
