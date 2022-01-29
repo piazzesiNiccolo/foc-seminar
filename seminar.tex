@@ -473,14 +473,74 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
 \end{frame}
 \begin{frame}
   
-   
-    $\mathcal{T_R}$ = Initial Object in $\underline{\mathcal{R}\text{-Sys}}$ 
+    \small
+    $\mathcal{T_R}$ $\Rightarrow$ \textbf{Initial Object} in $\underline{\mathcal{R}\text{-Sys}}$ 
 
 
     \bigskip
-    $\mathcal{T_R}(X)$ = Free Object in $\underline{\mathcal{R}\text{-Sys}}$
+    $\mathcal{T_R}(X) \Rightarrow$ \textbf{Free Object} in $\underline{\mathcal{R}\text{-Sys}}$
 
+    \bigskip
+    \textbf{Satisfaction relation:} 
+    $$\mathcal{S} \models [t(\overline{x})] \rightarrow [t'(\overline{x})]\quad \Rightarrow\quad \exists\  \alpha: t_\mathcal{S} \rightarrow t'_\mathcal{S}$$
 
+    \bigskip
+    \textbf{Soundness:} For $\mathcal{R}$ rewrite theory, 
+    $$ \mathcal{R} \vdash [t(\overline{x})] \rightarrow [t'(\overline{x})] \quad \Rightarrow\quad \mathcal{R} \models [t(\overline{x})] \rightarrow [t'(\overline{x})]$$
+
+    \bigskip
+    \textbf{Completeness:} For $\mathcal{R}$ rewrite theory, 
+    $$ \mathcal{R} \models [t(\overline{x})] \rightarrow [t'(\overline{x})] \quad \Rightarrow\quad \mathcal{R} \vdash [t(\overline{x})] \rightarrow [t'(\overline{x})]$$
+
+    \bigskip
+    All proven in \cite{meseguer1992conditional}.
+\end{frame}
+\begin{frame}
+    \frametitle{2-category models}
+    \scriptsize 
+    \textbf{Lawvere}: Algebras as categories of functors.
+    
+    $\mathbf{T} = (\Sigma,E) \quad \Sigma\text{-algebra}\ A\ \text{satisfying}\ E$
+
+    Given  $[t(\overline{x})], A_t:A^n \rightarrow A$ extends to the product preserving functor
+    $$ \hat{A}:\underline{\mathcal{L}_\mathbf{T}} \rightarrow \underline{Set}$$
+
+    $\underline{\mathcal{L}_\mathbf{T}}$
+    \begin{itemize}
+        \item Objects: natural numbers 
+        \item Arrows: $t[\overline{x}]: n \rightarrow 1$
+        \item Product: $n$ is the product of $1$ with itself $n$ times and has projections $[x_1] \cdots [x_n]$.
+        \item Composition given by substitution. 
+         $$ m \xrightarrow{([u_1],\cdots,[u_n])} n \xrightarrow{[t]} 1 \quad \Rightarrow\quad [t(\overline{u}/\overline{x})]:m \rightarrow 1$$ 
+    \end{itemize}
+    We define the category $\underline{Mod}(\underline{\mathcal{L}_\mathbf{T}},\underline{Set})$ with objects functors like $\hat{A}$ and arrows 
+    natural transformation between them.
+    $$A \mapsto \hat{A}\quad \Rightarrow\quad\text{\textbf{Alg}}_{\Sigma,E} \cong \underline{Mod}(\underline{\mathcal{L}_\mathbf{T}},\underline{Set})$$
+\end{frame}
+\begin{frame}
+    \frametitle{$\mathcal{L_R}$}
+    \scriptsize
+    We can generalize the Lawvere constructions for rewriting logic by taking $\underline{\text{Cat}}$ instead of  $\underline{\text{Set}}$ as the "ground" of existence.
+
+    \medskip
+    $R=(\Sigma, E, L, R)\quad \mathcal{R}\text{-system}\ \mathcal{S}$.
+    
+    Given a rule $r:[t] \rightarrow [t']$, the assignment to a natural transformation $r_\mathcal{S}:t_\mathcal{S} \rightarrow t'_\mathcal{S}$ extends naturally to 
+    a 2-product preserving 2-functor 
+    $$\hat{\mathcal{S}}: \underline{\mathcal{L}_R} \rightarrow \underline{Cat}.$$
+
+    
+    $\underline{\mathcal{L_R}}$:$\quad \bullet\ $Objects: natural numbers $\quad \bullet\ $Arrows: $[t(\overline{x})]: n \rightarrow 1$
+
+    \bigskip
+    $\underline{\mathcal{L_R}}(n,1)$:$\quad \bullet\ $Objects: $[t(\overline{x})]: n \rightarrow 1 \quad \bullet\ $ Arrows:$  [\alpha]:[t(\overline{x})] \rightarrow [t'(\overline{x})]$
+
+    \begin{figure}
+        \includegraphics[scale=0.15]{img/comp.png}
+    \end{figure}
+    We define the category $\underline{Mod}(\underline{\mathcal{L_R}},\underline{Cat})$ as the category of canonical 2-product preserving 2-functors from 
+    $\underline{L_R}$ to $ \underline{Cat}$.
+    $$\mathcal{S} \mapsto \mathcal{\hat{S}}\quad \Rightarrow \quad \underline{\mathcal{R}\text{-Sys}} \cong \underline{Mod}(\underline{\mathcal{L_R}},\underline{Cat})$$
 \end{frame}
 \begin{frame}
     \frametitle{Computational view of $\mathcal{R}$-systems}
