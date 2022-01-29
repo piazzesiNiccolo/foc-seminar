@@ -54,6 +54,7 @@
   \end{frame}
 }
 
+
 \title{Conditional Rewriting Logic \& Maude}
 \author{Niccolò Piazzesi}
 \institute{
@@ -907,25 +908,36 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
 \end{frame}
 \subsection{Megastore-CGC}
 \begin{frame}
-    \frametitle{Data in the cloud}
-\begin{figure}
-    \includegraphics[width=.7\textwidth]{img/cap.png}
-\end{figure}
-\end{frame}
-\begin{frame}
-    \textbf{Availability AND Scalability} $\Rightarrow$ must replicate data
+    \frametitle{The context}
 
-    How can i keep replicated data consistent?
+    Database facilities crucial for many applications.
+
+    \bigskip
+    To impose consistency, \emph{transactions} are provided. 
     
     \bigskip
-    Usual approach: \textcolor{red}{"Eventual consistency"}
+    \begin{block}{Transaction}
+           Sequence of read and write operations that are executed atomically. 
+    \end{block}
 
     \bigskip
-    Not ok for all applications (banking, commerce, medical systems,...)
-
-    \bigskip
-    Classical database transactions not well supported  in cloud computing, too expensive.
+    Concurrent execution of a set of transactions is equivalent to some sequential execution of the transactions.
 \end{frame}
+\begin{frame}
+    
+    \frametitle{Data in the cloud}
+    Transactions not well supported in cloud-based data stores.
+
+    \bigskip
+    To enforce good availability and scalability data is replicated, ensuring consistency may be too costly.
+
+    \bigskip
+    Usual approach $\Rightarrow$ "\textbf{Eventual consistency}".
+\begin{figure}
+    \includegraphics[width=.7\textwidth,height = .5\textheight, keepaspectratio]{img/cap.png}
+\end{figure}
+\end{frame}
+
 \begin{frame}
     \frametitle{Google Megastore}
     \begin{itemize}
