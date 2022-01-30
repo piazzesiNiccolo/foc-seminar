@@ -959,14 +959,17 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
 
 \end{frame}
 \begin{frame}
-   \frametitle{Consistency protocol}
-   \small
-   \emph{t}: read and writes from entity group \emph{eg}.
+   \frametitle{Commit protocol}
+   When a transaction $t$ request a commit on site $s$:
+   \begin{enumerate}
+       \item  $s$ sends a \emph{proposal}, containing a log entry and the next leader to the current side leader $l$. 
+       If another transaction is executing, $t$ is aborted otherwise $l$ sends the proposal to other sites.
+       \item $s$ waits for an \emph{ack} response from all sites. If some sites fail to responde, an \emph{invalidate} message is sent instead.
+       \item When all sites acknowledge the proposal or the invalidate message, $s$ requests all sites to apply $t$ changes. 
+        Each site replicating the entity groups append the log entry to the local copy of the transaction log and then updates the local data store.
+   \end{enumerate}
 
-
-    \begin{itemize}
-        \item 
-    \end{itemize}
+   When  some failures happens (a site goes down, messages are lost,...), a new site may propose itself.
 \end{frame}
 \begin{frame}
     \frametitle{MegaStore CGC}
@@ -976,7 +979,7 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
         \item Formalized Google MegaStore in Real-Time Maude.
         \begin{itemize}
             \item 56 rewrite rules (37 for fault tolerance).
-            \item Use  of simulation and model checking to discover bugs during development.
+            \item Use  of simulation and model checking to discover bugs during development and measure performance.
         \end{itemize} 
         \item Introduced MegaStore CGC, an extension that provides consistency for transactions 
         accessing multiple entity groups. 
