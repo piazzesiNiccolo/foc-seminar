@@ -916,9 +916,7 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
     To impose consistency, \emph{transactions} are provided. 
     
     \bigskip
-    \begin{block}{Transaction}
-           Sequence of read and write operations that are executed atomically. 
-    \end{block}
+           \textbf{Transaction: Sequence of read and write operations that are executed atomically. }
 
     \bigskip
     Concurrent execution of a set of transactions is equivalent to some sequential execution of the transactions.
@@ -940,44 +938,35 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
 
 \begin{frame}
     \frametitle{Google Megastore}
-    \begin{itemize}
-        \item Google's replicated data store.
-        \item Billions  of read/write daily transactions.
-        \item Adds (limited) support for transactions  in distributed data stores.   
-    \end{itemize}
-    \begin{figure}
-        \includegraphics[width=\textwidth]{img/megastore.png}
-    \end{figure}
-\end{frame}
-\begin{frame}
-    \begin{itemize}
-        \item Data divided into \textbf{entity groups.} 
-        \item A single entity group is replicated across multiple \textbf{\emph{sites}}, managed by a \emph{\textbf{coordinator.}}
-        \item \textbf{Replicated transaction log}  for each group.
-        \item Two phase commits with a paxos-based protocol.
-        \item Sites agree on next log entry if concurrent update.
-    \end{itemize}
-    \begin{figure}
-        \includegraphics[width=\textwidth, height=.6\textheight,keepaspectratio]{img/paxos.png}
-    \end{figure}
-\end{frame}
-\begin{frame}
+    \scriptsize
+    Data stored as key value pairs called \emph{entities.}
     
-    \large
-    Megastore  guarantees consistency for transactions accessing a \textbf{single} entity group.
+    \medskip
+    \textbf{Entity groups: set of entities.} Each entity group is replicated at different \emph{sites}.
+        
+    \medskip
+    Transaction: series of reads and writes on entitites followed by a commit request.
+    
+    \bigskip
+    A replicated \emph{transaction log} is maintained for each entity group.
 
     \bigskip
-    \textbf{Issues:}
+    \emph{Megastore} ensures atomicity and serializability of transactions accessing a single entity group.
+
+    \begin{figure}
+        \includegraphics[width=\textwidth, height=.5\textheight, keepaspectratio]{img/paxos.png}
+    \end{figure}
+
+\end{frame}
+\begin{frame}
+   \frametitle{Consistency protocol}
+   \small
+   \emph{t}: read and writes from entity group \emph{eg}.
+
+
     \begin{itemize}
-        \item Original overview definition very informal, \textbf{really complex system}.
-        \item No consistency guarantee if a transaction reads multiple entity groups.
-        \begin{itemize}
-            \item If you need consistency you could put all your data in a single entity group. 
-            \item This could significantly worsen performance, concurrent updates works better 
-            if the entity groups managed are smaller.
-        \end{itemize}
+        \item 
     \end{itemize}
-    
 \end{frame}
 \begin{frame}
     \frametitle{MegaStore CGC}
@@ -1046,53 +1035,66 @@ class Transaction | operations : OperationList, status : TransStatus,
         \end{lstlisting}
 \end{frame}
 \begin{frame}
-    \scriptsize
-    Performance was evaluated using Real Time Maude randomized simulations, which provides good performance estimates.
-
-    
-    \bigskip
-    Simulation starts from realistic initial states and keep tracks of measures such as 
-    average latency, number of commits, aborts, frequency of requests etc...
-    \begin{figure}
-        \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/init.png}
-    \end{figure}
-\end{frame}
-\begin{frame}
 \frametitle{Megastore-CGC}
-
+    \small 
     Observation:
     \begin{itemize}
         \item A site participates in all updates involving the entity groups it replicates 
         \item Implicit local ordering on these updates
     \end{itemize}  
             
-    Idea:
-    \begin{itemize}
-        \item Select one site and make the ordering \textbf{explicit.}
-        \item Site validates transactions on multiple entity groups before commit.
-    \end{itemize}
+    \textbf{Idea}:Select one site and make the ordering \textbf{explicit.}
+    Site validates transactions on multiple entity groups before commit.
 
-    \emph{Ordering class} $\Rightarrow$ set of entity groups.
+    \bigskip
 
-    \textbf{Ordering site} for each ordering class.
+    
+
+    $S$ = set of sites. $\quad R(s)$ = entity groups replicated at site $s$.
+
+    \medskip
+    Ordering class $oc$ = set of entity groups.
+    
+    $$ \forall oc \in OC\ \exists s \in S\text{ s.t } oc \subseteq R(s)$$
+    \medskip
+    Ordering site $os$ = site replicating all entity groups in $oc$.
 \end{frame}
 
 \begin{frame}
-    Megastore-CGC piggybacks its ordering and validation in the normal Megastore protocol.
-    
+    \small
+    \begin{align*}
+   &os: OC \rightarrow S\text{, assigns to each ordering class its ordering site.}\\
+   &ol:OC \rightarrow Orderlist\text{, assigns to each ordering class its ordering list.}
+    \end{align*}
 
+    Each entry in $ol(oc)$ contains the updates on entity groups in $oc$ together with the updating transaction.
+
+    \medskip
+    Each site maintains a projection of $ol$ with the updates on the entity groups it replicates.
 
     \bigskip
-    Failure handling both for message loss AND ordering site failure.
+    \textbf{Validation}:
+
+    \medskip
+    When a transaction $t$ accessing $oc$ commits, an entry is appended to $ol(oc)$. 
 
     \bigskip
-    No additional messages, maintains Megastore performance and fault tolerance. 
+    \textbf{The transaction $t$ is considered valid iff its read set is consistent with the last update in $ol(oc)$.} 
+\end{frame}
+\begin{frame}
+    \small
+    Megastore-CGC extends the normal commit protocol in the following way:
+    \begin{itemize}
+        \item In step 1, $t$ is ordered when it is received by the ordering site $os$.
+        It gets validated using its read set, which is included in the log entry proposal.
 
+        \item If validation is succesful, the updated order is included in the apply phase of step 3.
+        \item If the validation fails,step 3 is replaced by a rollback aborting $t$.
+    \end{itemize}
     \begin{figure}
-        \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/validate.png}
+        \includegraphics[width=\textwidth,height=.7\textheight,keepaspectratio]{img/validate.png}
     \end{figure}
 \end{frame}
-
 \begin{frame}[fragile]
     \frametitle{LTL requirements}
     System behaviour verification done via LTL model checking.
@@ -1133,6 +1135,13 @@ conflictAborts : 171, validationAborts : 10, ... > ... \}}
     \end{center} 
 \end{frame} 
 
+\begin{frame}
+    Simulation starts from realistic initial states and keep tracks of measures such as 
+    average latency, number of commits, aborts, frequency of requests etc...
+    \begin{figure}
+        \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/init.png}
+    \end{figure}
+\end{frame}
 \begin{frame}
     Analyzing results,  almost no difference in performance was found between Megastore and Megastore-CGC.
     \begin{figure}
