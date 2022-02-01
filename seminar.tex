@@ -66,22 +66,11 @@
 \frame{\titlepage}
 
 \section{Introduction and main concepts}
-\begin{frame}{Outline}
-    \begin{figure}
-        \includegraphics[height=\textheight]{img/sec0.png}
-    \end{figure}
-\end{frame}
-\begin{frame}{Outline}
-    \begin{figure}
-        \includegraphics[height=\textheight]{img/sec1.png}
-    \end{figure}
-\end{frame}
 \begin{frame}
     \frametitle{What is a concurrent system?}
     Modeling concurrent system is one of the most studied problems in Computer Science.
 
     \bigskip
-    \pause
     Many proposed answers:\begin{itemize}
         \item Petri Nets 
         \item CCS
@@ -92,22 +81,29 @@
 \end{frame}
 \begin{frame}
     \frametitle{The need for unification}
-    \pause
         \begin{block}{External fragmentation}
             Hard to relate different approaches, each with their own concepts, models and issues.
         \end{block}
-    \pause 
     \begin{block}{Internal fragmentation}
         Sometimes, fragmentation appears also within a specific approach (e.g. how can we unify operational and denotational semantics of CCS?).
     \end{block}
-    \pause
     \begin{block}{Concurrency in other areas}
         A related problem is the integration of concurrency with other paradigms ( OO, Functional, ...)
         without using complex \emph{ad hoc} solutions.
     \end{block}
 \end{frame}
+\begin{frame}{The strategy}
+    \begin{figure}
+        \includegraphics[height=\textheight]{img/sec0.png}
+    \end{figure}
+\end{frame}
 
 \section{Foundations}
+\begin{frame}{The strategy}
+    \begin{figure}
+        \includegraphics[height=\textheight]{img/sec1.png}
+    \end{figure}
+\end{frame}
 \begin{frame}[fragile]
     \frametitle{A first example}
 
@@ -154,7 +150,6 @@ A labelled transition system and its code in Maude, a language based on rewritin
         \item R: set of pairs $R \subseteq L \times (T_{\Sigma, E}(\mathbf{X})^2)^+$
     \end{itemize}
     
-    \pause
     \bigskip
     $T_{\Sigma,E}(\mathbf{X})$ denotes the $\Sigma-algebra$ of equivalence classes of $\Sigma-terms$ with variables in $\mathbf{X}$ modulo the equations E.
     
@@ -216,7 +211,6 @@ A labelled transition system and its code in Maude, a language based on rewritin
     $\mathcal{R} = (\Sigma, E, L, R)$
     \small
     
-    \pause
     \medskip
     A $(\Sigma, E)$ sequent $[t] \rightarrow [t']$ is called  a \emph{concurrent $\mathcal{R}$-rewrite} iff it can be derived from $\mathcal{R}$ by finite application   of rules (1)-(4).
     
@@ -499,7 +493,7 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
 \begin{frame}
     \frametitle{2-category models}
     \scriptsize 
-    \textbf{Lawvere}: Algebras as categories of functors.
+    \textbf{Lawvere}: Algebras as functors.
     
     $\mathbf{T} = (\Sigma,E) \quad \Sigma\text{-algebra}\ A\ \text{satisfying}\ E$
 
@@ -509,7 +503,7 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
     $\underline{\mathcal{L}_\mathbf{T}}$
     \begin{itemize}
         \item Objects: natural numbers 
-        \item Arrows: $t[\overline{x}]: n \rightarrow 1$
+        \item Arrows: $[t(\overline{x})]: n \rightarrow 1$
         \item Product: $n$ is the product of $1$ with itself $n$ times and has projections $[x_1] \cdots [x_n]$.
         \item Composition given by substitution. 
          $$ m \xrightarrow{([u_1],\cdots,[u_n])} n \xrightarrow{[t]} 1 \quad \Rightarrow\quad [t(\overline{u}/\overline{x})]:m \rightarrow 1$$ 
@@ -555,7 +549,7 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
     \end{align*}
 \end{frame}
 \section{Maude}
-\begin{frame}{Outline}
+\begin{frame}{The strategy}
     \begin{figure}
         \includegraphics[height=\textheight]{img/sec2.png}
     \end{figure}
@@ -583,7 +577,7 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
             \textbf{New view:}
             \begin{itemize}
                 \item Semantics based on rewriting logic.
-                \item Concurrent computations.
+                \item Rewriting rules as concurrent state changes.
                 \item Programming \emph{concurrent systems.}
             \end{itemize}
         \end{column}
@@ -606,23 +600,19 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
     \frametitle{What is Maude}
     \textbf{Maude}
     \begin{itemize}
-        \pause
         \item Declarative programming language based on rewriting logic 
         \begin{itemize}
             \item Built by SRI international and University of Illinois
             \item Includes membership equational logic as a sublanguage based on OBJ3 
         \end{itemize}
-        \pause
+        
         \item Modelling of distributed systems 
-        \pause 
         \item  Explicit state analysis 
         \begin{itemize}
             \item Simulation by rewriting 
             \item reachability analysis 
             \item LTL and LTLR model checking 
         \end{itemize}
-        \pause 
-        
         \item Unification 
         \item SMT solver
     \end{itemize}
@@ -633,7 +623,7 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
             fmod NAT-ADD is
                 sort Nat .
              op 0 : -> Nat [ctor] .
-             op s_ : Nat -> Nat  .
+             op s_ : Nat -> Nat [ctor] .    
              op _+_ : Nat Nat -> Nat [assoc comm id: 0] .
              vars M N : Nat . --- This is a comment
              eq s N + s M = s s (N + M) .
@@ -646,20 +636,6 @@ result Nat: s s s 0
 
     \end{lstlisting}
 \end{frame}
-    \begin{frame}[fragile]
-        \frametitle{Including modules}
-        \begin{lstlisting}[language=maude]
-            fmod NAT-LIST-CONSTR is
-                protecting NAT-ADD .
-                sort List .
-             op nil : -> List [ctor] .
-             op _ _ : List Nat -> List [ctor] .
-             endfm
-             *** "1 2 3" -> nil s(0) s(s(0)) s(s(s(0))) ***
-        \end{lstlisting}
-        
-    \end{frame}
-
 
 \begin{frame}[fragile]
     \frametitle{System modules}
@@ -784,7 +760,7 @@ result Bool: true
 )***
     \end{lstlisting}
 \end{frame}
-\begin{frame}{Outline}
+\begin{frame}{The strategy}
     \begin{figure}
         \includegraphics[height=\textheight]{img/sec3.png}
     \end{figure}
@@ -873,12 +849,12 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
     \end{lstlisting}
 \end{frame}
 \subsection{Maude by example}
-\begin{frame}{Outline}
+\section{Applications}
+\begin{frame}{The strategy}
     \begin{figure}
         \includegraphics[height=\textheight]{img/sec4.png}
     \end{figure}
 \end{frame}
-\section{Applications}
 \begin{frame}
     \frametitle{Applications}
     \begin{itemize}
@@ -908,32 +884,15 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
 \end{frame}
 \subsection{Megastore-CGC}
 \begin{frame}
-    \frametitle{The context}
-
-    Database facilities crucial for many applications.
-
-    \bigskip
-    To impose consistency, \emph{transactions} are provided. 
-    
-    \bigskip
-           \textbf{Transaction: Sequence of read and write operations that are executed atomically. }
-
-    \bigskip
-    Concurrent execution of a set of transactions is equivalent to some sequential execution of the transactions.
-\end{frame}
-\begin{frame}
-    
-    \frametitle{Data in the cloud}
-    Transactions not well supported in cloud-based data stores.
-
-    \bigskip
-    To enforce good availability and scalability data is replicated, ensuring consistency may be too costly.
-
-    \bigskip
-    Usual approach $\Rightarrow$ "\textbf{Eventual consistency}".
-\begin{figure}
-    \includegraphics[width=.7\textwidth,height = .5\textheight, keepaspectratio]{img/cap.png}
-\end{figure}
+    \frametitle{Google Megastore}
+    \begin{itemize}
+        \item Google's replicated data store.
+        \item Billions  of read/write daily transactions.
+        \item Adds (limited) support for transactions  in distributed data stores.   
+    \end{itemize}
+    \begin{figure}
+        \includegraphics[width=\textwidth]{img/megastore.png}
+    \end{figure}
 \end{frame}
 
 \begin{frame}
