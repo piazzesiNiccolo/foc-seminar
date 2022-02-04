@@ -14,7 +14,7 @@ Il problema dell'avere così tanti approcci  è quello della *frammentazione*. �
 
 Vi è anche  quella che qui è chiamata  frammentazione interna. Infatti anche all'interno dello stesso modello dove ad esempio risulta complesso unificare semantica operazionale e denotazionale in modo soddisfacente.
 
-Un altra questione è quella dell'integrazione della concorrenza in altre aree, come ad esempio nei linguaggi di programmazione dove spesso si usano soluzioni *ad hoc* non native che risultano in modelli molto più complessi del dovuto. L'obiettivo della rewriting logic è quello di unificare semanticamente tutti i paradigmi attraverso il concetto di teoria di riscrittura e di fornire una visione universale dei sistemi di concorrenza e di strumenti per ragionare in modo rigoroso e corretto su di essi. 
+Un altra questione è quella dell'integrazione della concorrenza in altre aree, come ad esempio nei linguaggi di programmazione dove spesso si usano soluzioni *ad hoc* non native che risultano in modelli molto più complessi del dovuto. L'obiettivo della rewriting logic è quello di unificare semanticamente tutti i paradigmi attraverso il concetto di teoria di riscrittura e di fornire una visione universale dei sistemi di concorrenza per ragionare in modo rigoroso e corretto su di essi. 
 
 La strategia seguita è quella riportata nel diagramma: Prima di tutto si descrive il modello astratto, che fornisce la rigorosa descrizione matematica dei modelli e la loro semantica. Dopodichè si utilizza il modello come base di sviluppo per linguaggi di alto livello, che in questo caso si traduce in *Maude*, del quale parleremo successivamente. Viene poi sviluppato un ambiente di programmazione dotato di metaprogrammazione (questo grazie alle caratteristiche riflessive della logica stessa) e questo ambiente viene infine utilizzato per descrivere  e ragionare su sistemi concreti e realistici. 
 
@@ -53,7 +53,7 @@ La regola di replacement viene ovviamente semplificata nel caso in cui r sia inc
 
 Adesso vediamo alcune nozioni e proprietà delle teorie. 
 
-Un sequente derivato dalle regole viene anche detto R-riscrittura concorrente. Questo ci da una prima intuizione dell'equivalenza fra deduzione logica e computazione concorrente presente all'interno del modello.
+Un sequente derivato dalle regole viene anche detto R-riscrittura concorrente. 
 
 R si dice terminante se non esistono deduzioni  o catene di riscrittture infinite.
 
@@ -97,7 +97,7 @@ Quello che andiamo a cercare è una categoria che chiamamo T_r(X) in cui gli ogg
 
 Ciascula regola di generazione definisce un'operazione che, presi termini di prova come argomenti restituisce un nuovo termine di prova. Quello che  viene generato è dunque una struttura algebrica, in particolare il grafo P_r(x) che ha come nodi i termini generati da sigma,e e come freccie le freccie identità, i simboli di funzioni f, le regole r e gli archi dati dalla composizioni di due archi.
 
-La struttura generata  è però ancora puramente sintattica e fa ancora troppe distinzioni che vorremo ignorare. In altre parole, vogliamo andare ad identificare due prove "uguali" rappresentati da diversi termini. Poichè nella rewriting logic le prove corrispondono a computazioni concorrente quello che ci chiediamo è: Quando posso dire che due computazioni concorrenti sono sostanzialmente uguali?
+La struttura generata  è però ancora puramente sintattica e fa ancora troppe distinzioni che vorremo ignorare. In altre parole, vogliamo andare ad identificare due prove "uguali" rappresentati da diversi termini.
 
 La risposta è completamente assiomatica andando ad identificare prove attraverso determinate equazioni.  Definiamo il modello  T_r(X) come il quoziente di P_R(X) modulo queste equazioni: 
 
@@ -129,9 +129,9 @@ La risposta è completamente assiomatica andando ad identificare prove attravers
     
     E possibile definire un R-system anche in modo analogo al lavoro fatto da Lawvere sulle algebre. 
     
-    Lawvere aveva scoperto che  data un algebra A definita su Sigma E, l'interpretazione funzionale del terminte t puo rssere esteso a un funtore A cappello da L_t a Set. L_t  sta per Lawvere thory ed è definita come una categoria che a come oggetti i numeri naturali e come freccie le classi di equivalenza di termini t. Prodotto e composizione.Prendendo il prodotto cartesiano come prodotto di set possiamo definire la categoria Mod(Lt, set) come la categoria che ha come oggetti i funtori come A cappello e come freccie trasformazioni naturale. L'assegnazione A -> A cappello si traduce in un isomorfismo fra categorie.
     
-    DIscorso per L_R
+    
+    
     
     
     
@@ -185,4 +185,17 @@ Ad esempio vediamo un modulo object oriented che definisce una classe rappresent
 
 # Google
 
-Ora possiamo passare all'ultima parte dove vediamo un'applicazione concreta della rewriting logic e di maude. In realtà ci sono molte piu applicazioni sviluppate che vengono qui riportate come ad esempio per la descrizione della semantica di un linguaggio di programmazione  o come metalogica nel quale rappresentare ede seguire altere logiche. Noi parleremo di quello in rosso e andremo a vedere come è stato utilizzato maude per formalizzare ed estendere google megastore, un datastore distribuito.
+Ora possiamo passare all'ultima parte dove vediamo un'applicazione concreta della rewriting logic e di maude. In realtà maude è stato applicato in vari contesti che vengono qui riportate come ad esempio per la descrizione della semantica di un linguaggio di programmazione  o come metalogica nel quale rappresentare ede seguire altere logiche. Noi parleremo di quello in rosso e andremo a vedere come è stato utilizzato maude per formalizzare ed estendere google megastore. 
+
+Google megastore è un servizio di memorizzazione dati distribuito e replicato fornito da google che fornisce un support parziale lle transazioni in ambito distirbuito. Cosa significa questo? Solitamente i servizi di database mantengono i dati consistenti e non corrotti anche in presenza di accessi concorrenti grazie alle transazioni. Una transazione è una serie di letture e scritture che vengono eseguite atomicamente e quindi non soggette a problemi tipici della concorrenza. Quando però si passa a database distribuiti le transazioni non sono proprio ben supportate.  QUesto perchè, per manenere la velocità di lettura e scrittura, i dati vengono replicati in piu siti. Mantenere la consistenza fra piu copie degli stessi dati puo diventare troppo costoso in quanto richiede l'utilizzo di protocolli di sincronizzazione e scambio di messaggi che potrebbero degradare le prestazioni. Dunque l'approccio solitamente utilizzato è quello di accettare un certo grado di inconsistenza con la promessa che prima o poi i dati torneranno consistenti mantendo però una maggior disponibilità e tempi di risposta. Alcune applicazioni come ad esempio in ambito medico  o bancario hanno però bisogno delle transazioni in quanto mantenere i dati consistenti è critico e google megastore fornisce proprio questo tipo di servizio.
+
+
+
+I dati vengono memorizzati come coppie chiave valore dette entità e raggruppati in insiemi detti entity groups. CIascun entity groups viene replicato in diversi siti e viene mantenuta un log delle transazioni  copiato su ciascun sito per ogni gruppo. 
+
+Megastore garantisce l'atomicità e la serializzibilità delle transazioni che  lavorano su un singolo entity group con un protocllo a tre fasi: 
+
+Quando una transazione t richiede un commit su un sito s, s invia una proposta a quello che viene detto site leader l, che è un altro sito replicante gli stessi dati e che è stato elletto in una precedente esecuzione del protocollo. L può accettare la proposta oppure rifiutarla nel caso un cui ad esempio si stia eseguendo un'altra transazione. Se l accetta la proposta, essa viene invita a tutti gli altri siti partecipanti che devono inviare un messaggo di acknowledge al sito s. Nel caso in cui alemno un sito non risponda s invia un messaggio di invalidazione della proposta. Nel caso in cui la proposta venga accettata s invia un altro messaggio nel quale richiede di applicare le modifiche eseguite da t. CIascun sito aggiunge la log entry inclusa con la proposta al proprio log e applica le modifiche.
+
+Passando 
+

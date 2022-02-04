@@ -55,7 +55,8 @@
 }
 
 
-\title{Conditional Rewriting Logic \& Maude}
+\title{Conditional Rewriting Logic}
+\subtitle{From  abstract model to concrete applications}
 \author{Niccolò Piazzesi}
 \institute{
     Università degli studi di Pisa
@@ -586,10 +587,10 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
     \end{columns}
 
     \bigskip
-    Program concurrent systems while mantaining a rigorous mathematical semantics.
+    Program concurrent systems while maintaining a rigorous mathematical semantics.
     
     \bigskip
-    Functional interpretation can still be mantained, simple and rigorous integration with other programming paradigms.
+    Functional interpretation can still be maintained, simple and rigorous integration with other programming paradigms.
 
     \bigskip
     \textbf{Maude}: module semantics given in terms of an \emph{initial machine} linking its operational and denotational semantics.
@@ -618,27 +619,7 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
     \end{itemize}
 \end{frame}
 \begin{frame}[fragile]
-    \frametitle{Functional Modules}
-    \begin{lstlisting}[language=maude]
-            fmod NAT-ADD is
-                sort Nat .
-             op 0 : -> Nat [ctor] .
-             op s_ : Nat -> Nat [ctor] .    
-             op _+_ : Nat Nat -> Nat [assoc comm id: 0] .
-             vars M N : Nat . --- This is a comment
-             eq s N + s M = s s (N + M) .
-            endfm
-
-Maude> in nat-add.maude 
-
-Maude> red s(s(0)) + s(0) .
-result Nat: s s s 0
-
-    \end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{System modules}
+    \frametitle{Maude modules}
     \scriptsize
     \begin{columns}
         \begin{column}{.5\textwidth}
@@ -686,79 +667,34 @@ Maude>  rew [3] $ $ q q .        result Marking: $ $ $ q q q q
 \end{frame}
 
 \begin{frame}[fragile]
-    \frametitle{Model checking}
     \scriptsize
-    \begin{columns}
-        \begin{column}{.6\textwidth}
-            
-            \begin{lstlisting}[language=maude]
-mod MUTEX is
-    sorts Name Mode Proc Token Conf .
-    subsorts Token Proc < Conf .
- op __ : Conf Conf -> 
-    Conf [ctor assoc comm id: none] .
- ops a b : -> Name [ctor] .
- op none : -> Conf [ctor] .
- op [_,_] : Name Mode -> Proc [ctor] .
- ops wait critical : -> Mode [ctor] .
- ops * $ : -> Token [ctor] .
- rl [a-enter] : $ [a, wait] => [a, critical] .
- rl [b-enter] : * [b, wait] => [b, critical] .
- rl [a-exit] : [a, critical] => [a, wait] * .
- rl [b-exit] : [b, critical] => [b, wait] $ .
-endm
+    Other tools provided:
+            \begin{itemize}
+            \item Normal form reduction 
+\begin{lstlisting}[language=maude]
+Maude> reduce in NAT-ADD : s(s(0)) + s(0) .
+reduce in NAT-ADD : s 0 + s s 0 .
+rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+result Nat: s s s 0
             \end{lstlisting}
-        \end{column}
-        \begin{column}{.4\textwidth}
+            \item Model checking 
             \begin{lstlisting}[language=maude]
-    load mutex.maude
-    load model-checker.maude
-    
-    mod MUTEX-PREDS is
-        protecting MUTEX .
-        including SATISFACTION .
-        subsort Conf < State .
-      op crit : Name -> Prop .
-      op wait : Name -> Prop .
-      var N : Name .
-      var C : Conf .
-      var P : Prop .
-      eq [N, critical] C |= 
-              crit(N) = true .
-      eq [N, wait] C |=
-              wait(N) = true .
-      eq C |= P = false [owise] .
-    endm
-            \end{lstlisting}
-        \end{column}
-    \end{columns}
-    
-\end{frame}
-\begin{frame}[fragile]
-    \scriptsize
-    \frametitle{Model checking}
-    \begin{lstlisting}[language=maude]
-         load mutex-preds.maude
-        mod MUTEX-CHECK is
-            protecting MUTEX-PREDS .
-            including MODEL-CHECKER .
-            including LTL-SIMPLIFIER .
-         ops initial1 initial2 : -> Conf .
-         eq initial1 = $ [a, wait] [b, wait] .
-         eq initial2 = * [a, wait] [b, wait] .
-        endm
-***(
 Maude> red modelCheck(initial1, [] ~(crit(a) /\ crit(b))) .
-reduce in MUTEX-CHECK : modelCheck(initial1, []~ (crit(a) /\ crit(b))) .
-rewrites: 22 in 10ms cpu (434ms real) (2200 rewrites/second)
+reduce in MUTEX-CHECK :
+modelCheck(initial1, []~ (crit(a) /\ crit(b))) .
 result Bool: true
-
-Maude> red modelCheck(initial2, [] ~(crit(a) /\ crit(b))) .
-reduce in MUTEX-CHECK : modelCheck(initial2, []~ (crit(a) /\ crit(b))) .
-rewrites: 22 in 0ms cpu (0ms real) (~ rewrites/second)
-result Bool: true
-)***
-    \end{lstlisting}
+            \end{lstlisting}
+        \item Controlling execution strategies 
+        \begin{lstlisting}[language=maude]
+Maude> srew (0)[3 2 1] (1)[nil] (2)[nil] using move ; move .
+Solution 1
+result Hanoi: (0)[3 2 1] (1)[nil] (2)[nil]
+Solution 2
+result Hanoi: (0)[3] (1)[1] (2)[2]
+...
+        \end{lstlisting}
+        \end{itemize}
+   
 \end{frame}
 \begin{frame}{The strategy}
     \begin{figure}
@@ -819,35 +755,6 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
         \item All the tools for verification, reachability analysis, simulation...
     \end{itemize}
 \end{frame}
-\begin{frame}[fragile]
-    \scriptsize
-    \frametitle{Objects in Full Maude}
-    \begin{lstlisting}[language=maude]
-    (omod ACCNT is 
-        protecting QID .
-        protecting MACHINE-INT .
-        subsort Qid < Oid .
-        class Accnt | bal : MachineInt .  
-        
-        msgs credit debit : Oid MachineInt -> Msg .  
-        msg transfer_from_to_ : MachineInt Oid Oid -> Msg .  
-
-        vars A B : Oid . 
-        vars M N N' : MachineInt .  
-
-     rl [credit] : credit(A, M) < A : Accnt | bal : N >
-       => < A : Accnt | bal : (N + M) > .  
-     crl [debit] : debit(A, M) < A : Accnt | bal : N >
-       => < A : Accnt | bal : (N - M) >
-          if N > M .  
-     crl [transfer] : (transfer M from A to B)
-       < A : Accnt | bal : N > < B : Accnt | bal : N' > 
-       => < A : Accnt | bal : (N - M) > 
-          < B : Accnt | bal : (N' + M) >
-          if N > M . 
-    endom)
-    \end{lstlisting}
-\end{frame}
 \subsection{Maude by example}
 \section{Applications}
 \begin{frame}{The strategy}
@@ -904,7 +811,7 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
     \textbf{Entity groups: set of entities.} Each entity group is replicated at different \emph{sites}.
         
     \medskip
-    Transaction: series of reads and writes on entitites followed by a commit request.
+    Transaction: series of reads and writes on entities followed by a commit request.
     
     \bigskip
     A replicated \emph{transaction log} is maintained for each entity group.
@@ -921,10 +828,10 @@ op metaFrewrite : Module Term Bound Nat ~> ResultPair[special (...)] .
    \frametitle{Commit protocol}
    When a transaction $t$ request a commit on site $s$:
    \begin{enumerate}
-       \item  $s$ sends a \emph{proposal}, containing a log entry and the next leader to the current side leader $l$. 
+       \item  $s$ sends a \emph{proposal}, containing a log entry and the next leader to the current site leader $l$. 
        If another transaction is executing, $t$ is aborted otherwise $l$ sends the proposal to other sites.
-       \item $s$ waits for an \emph{ack} response from all sites. If some sites fail to responde, an \emph{invalidate} message is sent instead.
-       \item When all sites acknowledge the proposal or the invalidate message, $s$ requests all sites to apply $t$ changes. 
+       \item $s$ waits for an \emph{ack} response from all sites. If some sites fail to respond, an \emph{invalidate} message is sent instead.
+       \item When all sites acknowledge the proposal or the invalidate message, $s$ requests them to apply $t$ changes. 
         Each site replicating the entity groups append the log entry to the local copy of the transaction log and then updates the local data store.
    \end{enumerate}
 
@@ -1097,13 +1004,6 @@ conflictAborts : 171, validationAborts : 10, ... > ... \}}
     \end{center} 
 \end{frame} 
 
-\begin{frame}
-    Simulation starts from realistic initial states and keep tracks of measures such as 
-    average latency, number of commits, aborts, frequency of requests etc...
-    \begin{figure}
-        \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{img/init.png}
-    \end{figure}
-\end{frame}
 \begin{frame}
     Analyzing results,  almost no difference in performance was found between Megastore and Megastore-CGC.
     \begin{figure}
