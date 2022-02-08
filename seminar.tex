@@ -10,7 +10,7 @@
 \usepackage{bussproofs}
 \usepackage{listings}
 \usepackage{amsmath}
-
+\usepackage[framemethod=TikZ]{mdframed}
 \usetheme{Copenhagen}
 \usefonttheme{professionalfonts}
 \setbeamertemplate{navigation symbols}{}
@@ -99,7 +99,6 @@
     \end{figure}
 \end{frame}
 
-\section{Foundations}
 \begin{frame}{The strategy}
     \begin{figure}
         \includegraphics[height=\textheight]{img/sec1.png}
@@ -152,7 +151,7 @@ A labelled transition system and its code in Maude, a language based on rewritin
     \end{itemize}
     
     \bigskip
-    $T_{\Sigma,E}(\mathbf{X})$ denotes the $\Sigma-algebra$ of equivalence classes of $\Sigma-terms$ with variables in $\mathbf{X}$ modulo the equations E.
+    $T_{\Sigma,E}(\mathbf{X})$ denotes the set of $E$-equivalence classes of $\Sigma-terms$ with variables in $\mathbf{X}$.
     
     \medskip
     Elements of R are called \emph{rewrite rules}.
@@ -601,22 +600,36 @@ Since proofs in Rewriting Logic corresponds to concurrent computations, what we 
     \frametitle{What is Maude}
     \textbf{Maude}
     \begin{itemize}
-        \item Declarative programming language based on rewriting logic 
+        \item Programming language based on rewriting logic 
         \begin{itemize}
             \item Built by SRI international and University of Illinois
-            \item Includes membership equational logic as a sublanguage based on OBJ3 
+            \item Includes a functional language as a sublanguage based on membership equational logic.
         \end{itemize}
-        
-        \item Modelling of distributed systems 
-        \item  Explicit state analysis 
-        \begin{itemize}
-            \item Simulation by rewriting 
-            \item reachability analysis 
-            \item LTL and LTLR model checking 
-        \end{itemize}
-        \item Unification 
-        \item SMT solver
     \end{itemize}
+        \bigskip
+        \textbf{Maude is:}
+
+        \begin{columns}
+            \begin{column}{.3\textwidth}
+                \pause
+                \begin{mdframed}[roundcorner=3pt,middlelinewidth=1,middlelinecolor=blue,backgroundcolor=yellow!40]
+                    A declarative programmming language.
+                \end{mdframed}
+            \end{column}
+            \begin{column}{.3\textwidth}
+                \pause
+            \begin{mdframed}[roundcorner=3pt,middlelinewidth=1,middlelinecolor=blue,backgroundcolor=yellow!40]
+                An executable formal specification language.
+            \end{mdframed}
+            \end{column} 
+            \pause
+            \begin{column}{.3\textwidth}
+                \begin{mdframed}[roundcorner=3pt,middlelinewidth=1,middlelinecolor=blue,backgroundcolor=yellow!40]
+                    A formal verification system.
+                    
+                \end{mdframed}
+            \end{column}
+        \end{columns}
 \end{frame}
 \begin{frame}[fragile]
     \frametitle{Maude modules}
@@ -666,36 +679,7 @@ Maude>  rew [3] $ $ q q .        result Marking: $ $ $ q q q q
     \end{lstlisting} 
 \end{frame}
 
-\begin{frame}[fragile]
-    \scriptsize
-    Other tools provided:
-            \begin{itemize}
-            \item Normal form reduction 
-\begin{lstlisting}[language=maude]
-Maude> reduce in NAT-ADD : s(s(0)) + s(0) .
-reduce in NAT-ADD : s 0 + s s 0 .
-rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
-result Nat: s s s 0
-            \end{lstlisting}
-            \item Model checking 
-            \begin{lstlisting}[language=maude]
-Maude> red modelCheck(initial1, [] ~(crit(a) /\ crit(b))) .
-reduce in MUTEX-CHECK :
-modelCheck(initial1, []~ (crit(a) /\ crit(b))) .
-result Bool: true
-            \end{lstlisting}
-        \item Controlling execution strategies 
-        \begin{lstlisting}[language=maude]
-Maude> srew (0)[3 2 1] (1)[nil] (2)[nil] using move ; move .
-Solution 1
-result Hanoi: (0)[3 2 1] (1)[nil] (2)[nil]
-Solution 2
-result Hanoi: (0)[3] (1)[1] (2)[2]
-...
-        \end{lstlisting}
-        \end{itemize}
-   
-\end{frame}
+
 \begin{frame}{The strategy}
     \begin{figure}
         \includegraphics[height=\textheight]{img/sec3.png}
@@ -905,16 +889,18 @@ class Transaction | operations : OperationList, status : TransStatus,
 \end{frame}
 \begin{frame}
 \frametitle{Megastore-CGC}
-    \small 
+    \scriptsize
     Observation:
     \begin{itemize}
         \item A site participates in all updates involving the entity groups it replicates 
-        \item Implicit local ordering on these updates
+        \item Implicit local ordering on these updates, we can make it explicit.
     \end{itemize}  
             
-    \textbf{Idea}:Select one site and make the ordering \textbf{explicit.}
-    Site validates transactions on multiple entity groups before commit.
-
+    \textbf{Idea:} Keep an ordering list of the transactions accessing the set of entity groups that we want to keep 
+    consistent. 
+    
+    \medskip
+    \textbf{A transactions is validated only if its read set is consistent with the last update in the list.}
     \bigskip
 
     
@@ -927,29 +913,11 @@ class Transaction | operations : OperationList, status : TransStatus,
     $$ \forall oc \in OC\ \exists s \in S\text{ s.t } oc \subseteq R(s)$$
     \medskip
     Ordering site $os$ = site replicating all entity groups in $oc$.
-\end{frame}
-
-\begin{frame}
-    \small
-    \begin{align*}
-   &os: OC \rightarrow S\text{, assigns to each ordering class its ordering site.}\\
-   &ol:OC \rightarrow Orderlist\text{, assigns to each ordering class its ordering list.}
-    \end{align*}
-
-    Each entry in $ol(oc)$ contains the updates on entity groups in $oc$ together with the updating transaction.
-
-    \medskip
-    Each site maintains a projection of $ol$ with the updates on the entity groups it replicates.
 
     \bigskip
-    \textbf{Validation}:
-
-    \medskip
-    When a transaction $t$ accessing $oc$ commits, an entry is appended to $ol(oc)$. 
-
-    \bigskip
-    \textbf{The transaction $t$ is considered valid iff its read set is consistent with the last update in $ol(oc)$.} 
+    $ol(oc):\text{ ordering list of } oc$
 \end{frame}
+
 \begin{frame}
     \small
     Megastore-CGC extends the normal commit protocol in the following way:
